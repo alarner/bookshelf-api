@@ -11,7 +11,7 @@ module.exports = function(res, urlPieces, model, errors) {
 		promise = model.fetchAll();
 	}
 
-	promise.then(function(results) {
+	return promise.then(function(results) {
 		if(!results) {
 			let err = new Howhap(errors.RECORD_NOT_FOUND, {
 				// model: 'fake',
@@ -25,5 +25,15 @@ module.exports = function(res, urlPieces, model, errors) {
 		else {
 			res.json(results.toJSON());
 		}
+	})
+	.catch(function(err) {
+		let error = new Howhap(errors.UNKNOWN, {
+			// model: 'fake',
+			// id: 
+		});
+		res.status(500).json({
+			message: 'Unknown error...',
+			status: 500
+		});
 	});
 };

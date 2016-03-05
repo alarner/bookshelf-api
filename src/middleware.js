@@ -29,7 +29,7 @@ module.exports = function(models) {
 		}
 
 		if(method === 'get') {
-			return get(req, urlPieces, model);
+			get(req, urlPieces, model);
 		}
 		else if(method === 'post') {
 			model.set(req.body);
@@ -105,5 +105,10 @@ module.exports = function(models) {
 				}
 			}
 		}
+
+		return {
+			urlPieces: urlPieces,
+			model: model
+		};
 	};
 };
