@@ -1,5 +1,6 @@
 let expect = require('chai').expect;
 let api = require('../src/index.js');
+let path = require('path');
 
 describe('index.js', function() {
 	it('should not accept number arguments', function() {
@@ -19,6 +20,11 @@ describe('index.js', function() {
 		expect(function() { api({path: 'foo'}); }).to.throw('Could not find the model path foo.');
 	});
 	it('should work if the path is valid', function() {
-		expect(function(){ api({path: 'test/models'}); }).to.not.throw();
+		expect(function(){ api({
+			path: path.join(__dirname, 'fixtures/models')
+		}); }).to.not.throw();
+		expect(api({
+			path: path.join(__dirname, 'fixtures/models')
+		})).to.be.a.function;
 	});
 });

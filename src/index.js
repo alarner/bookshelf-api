@@ -26,23 +26,17 @@ module.exports = function(config) {
 		throw new Howhap(config.errors.UNKNOWN, {error: e.toString()});
 	}
 
-	// let m = files
-	// .map(function(file) {
-	// 	return {
-	// 		model: require(path.join(config.path, file)),
-	// 		name: file.split('.')[0]
-	// 	};
-	// })
-	// .reduce(function(before, info) {
-	// 	before[info.name] = info.model;
-	// 	return before;
-	// }, {});
+	let models = files
+	.map(function(file) {
+		return {
+			model: require(path.join(config.path, file)),
+			name: file.split('.')[0]
+		};
+	})
+	.reduce(function(before, info) {
+		before[info.name.toLowerCase()] = info.model;
+		return before;
+	}, {});
 
-	// let models = {};
-
-	// for(let i in m) {
-	// 	models[i.toLowerCase()] = m[i];
-	// }
-
-	// return require('./middleware')(models);
+	return require('./middleware')(models);
 };
