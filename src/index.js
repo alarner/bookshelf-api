@@ -38,5 +38,5 @@ module.exports = function(config) {
 		return before;
 	}, {});
 
-	return require('./middleware')(models);
+	return require('./middleware')(models, config);
 };

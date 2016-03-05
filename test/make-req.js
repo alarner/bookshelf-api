@@ -1,6 +1,6 @@
 module.exports = function(method) {
-	let res = {
+	let req = {
 		method: method
 	};
-	return res;
+	return req;
 };

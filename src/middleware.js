@@ -4,7 +4,7 @@ let post = require('./post');
 let put = require('./put');
 let del = require('./delete');
 
-module.exports = function(models) {
+module.exports = function(models, config) {
 	return function(req, res, next) {
 		let url = _.trim(req.url, '/');
 		let urlPieces = url.split('/');
@@ -29,23 +29,13 @@ module.exports = function(models) {
 		}
 
 		if(method === 'get') {
-			get(req, urlPieces, model);
+			return get(req, res, urlPieces, model, config);
 		}
 		else if(method === 'post') {
-			model.set(req.body);
-			model.save().then(
-				function(savedModel) {
-					res.json(savedModel.toJSON());
-				},
-				function(err) {
-					res.status(400).json({
-						message: err.toString(),
-						status: 400
-					});
-				}
-			);
+			return post(req, res, urlPieces, model, config);
 		}
 		else if(method === 'put') {
+			return put(req, res, urlPieces, model, config);
 			if(urlPieces.length < 2) {
 				res.status(404).json({
 					message: 'Record not found',
@@ -68,6 +58,7 @@ module.exports = function(models) {
 			}
 		}
 		else if(method === 'delete') {
+			return delete(req, res, urlPieces, model, config);
 			if(urlPieces.length < 2) {
 				res.status(404).json({
 					message: 'Record not found',
@@ -105,10 +96,5 @@ module.exports = function(models) {
 				}
 			}
 		}
-
-		return {
-			urlPieces: urlPieces,
-			model: model
-		};
 	};
 };
