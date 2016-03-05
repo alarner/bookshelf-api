@@ -36,26 +36,6 @@ module.exports = function(models, config) {
 		}
 		else if(method === 'put') {
 			return put(req, res, urlPieces, model, config);
-			if(urlPieces.length < 2) {
-				res.status(404).json({
-					message: 'Record not found',
-					status: 404
-				});
-			}
-			else {
-				let updatedData = req.body;
-				model.save(updatedData).then(
-					function(savedModel) {
-						res.json(savedModel.toJSON());
-					},
-					function(err) {
-						res.status(500).json({
-							message: err.toString(),
-							status: 500
-						});
-					}
-				);
-			}
 		}
 		else if(method === 'delete') {
 			return delete(req, res, urlPieces, model, config);

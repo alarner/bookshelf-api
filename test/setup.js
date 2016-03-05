@@ -8,5 +8,17 @@ let knex = require('knex')({
 		directory: './test/seeds'
 	}
 });
+// let knex = require('knex')({
+// 	client: 'pg',
+// 	useNullAsDefault: true,
+// 	connection: {
+// 		host: 'localhost',
+// 		user: 'alarner',
+// 		database: 'test'
+// 	},
+// 	seeds: {
+// 		directory: './test/seeds'
+// 	}
+// });
 global.bookshelf = require('bookshelf')(knex);
 bookshelf.plugin('registry');

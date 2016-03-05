@@ -31,7 +31,8 @@ describe('middleware.js', function() {
 				expect(result.urlPieces.length).to.equal(1);
 				expect(result.model instanceof Product).to.be.true;
 				done();
-			});
+			})
+			.catch(done);
 		});
 
 		it('should properly process get requests with an id', function(done) {
@@ -43,7 +44,8 @@ describe('middleware.js', function() {
 				expect(result.urlPieces[1]).to.equal('7');
 				expect(result.model instanceof Product).to.be.true;
 				done();
-			});
+			})
+			.catch(done);
 		});
 
 		it('should properly process post requests with no id', function(done) {
@@ -60,7 +62,8 @@ describe('middleware.js', function() {
 				expect(result.model instanceof Product).to.be.true;
 				expect(res.status.calledWith(400)).to.be.false;
 				done();
-			});
+			})
+			.catch(done);
 		});
 	});
 
@@ -105,7 +108,8 @@ describe('middleware.js', function() {
 					} 
 				])).to.be.true;
 				done();
-			});
+			})
+			.catch(done);
 		});
 		it('should be able to get a single record by id', function(done) {
 			let req = makeReq('get');
@@ -121,7 +125,8 @@ describe('middleware.js', function() {
 					updatedAt: null
 				})).to.be.true;
 				done();
-			});
+			})
+			.catch(done);
 		});
 		it('should return an error when trying to query a record that doesn\'t exist', function(done) {
 			let req = makeReq('get');
@@ -138,7 +143,8 @@ describe('middleware.js', function() {
 					}
 				})).to.be.true;
 				done();
-			});
+			})
+			.catch(done);
 		});
 	});
 	
@@ -176,19 +182,141 @@ describe('middleware.js', function() {
 					id: 5
 				})).to.be.true;
 				done();
-			});;
+			})
+			.catch(done);
 		});
 	});
 
-	
-	
-	// it('should properly process get requests with an id', function() {
-	// 	let req = makeReq('get');
-	// 	req.url = '/product/7';
-	// 	let res = makeRes();
-	// 	let result = middleware(req, res);
-	// 	expect(result.urlPieces.length).to.equal(2);
-	// 	expect(result.urlPieces[1]).to.equal('7');
-	// 	expect(result.model instanceof Product).to.be.true;
-	// });
+	describe('put', function() {
+		it('should return an error if no id is provided and putBehavior is set to update', function(done) {
+			let mw2 = api({
+				path: path.join(__dirname, 'fixtures/models'),
+				putBehavior: 'update'
+			});
+			let req1 = makeReq('put');
+			req1.url = '/product';
+			req1.body = {
+				name: 'Car',
+				price: 37.99,
+				quantity: 23
+			};
+			let res1 = makeRes();
+			mw2(req1, res1)
+			.then(result => {
+				expect(res1.status.calledWith(400)).to.be.true;
+				expect(res1.json.calledWith({
+					message: 'Using {{ method }} requires that you provide an id in the url. For example "/model/1"',
+					status: 400,
+					params: {
+						model: 'product'
+					}
+				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+
+		it('should create the record if no id is provided and putBehavior is set to upsert', function(done) {
+			let req1 = makeReq('put');
+			req1.url = '/product';
+			req1.body = {
+				name: 'Car',
+				price: 37.99,
+				quantity: 23
+			};
+			let res1 = makeRes();
+
+			let req2 = makeReq('get');
+			req2.url = '/product/5';
+			let res2 = makeRes();
+
+			middleware(req1, res1)
+			.then(result => {
+				expect(res1.status.calledWith(400)).to.be.false;
+				expect(res1.json.calledWithMatch({
+					id: 5,
+					name: 'Car',
+					price: 37.99,
+					quantity: 23
+				})).to.be.true;
+				return middleware(req2, res2);
+			})
+			.then(result => {
+				expect(res2.json.calledWithMatch({
+					name: 'Car',
+					price: 37.99,
+					quantity: 23,
+					id: 5
+				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+
+		it('should return an error if the putBehavior is set to update and the record doesn\'t exist', function(done) {
+			let mw2 = api({
+				path: path.join(__dirname, 'fixtures/models'),
+				putBehavior: 'update'
+			});
+			let req1 = makeReq('put');
+			req1.url = '/product/100';
+			req1.body = {
+				name: 'Car',
+				price: 37.99,
+				quantity: 23
+			};
+			let res1 = makeRes();
+			mw2(req1, res1)
+			.then(result => {
+				expect(res1.status.calledWith(404)).to.be.true;
+				expect(res1.json.calledWithMatch({
+					message: 'Could not get "{{ model }}" with id {{ id }}.',
+					status: 404,
+					params: {
+						model: 'product',
+						id: '100'
+					}
+				})).to.be.true;
+				done();
+			});
+		});
+
+		it('should properly update records', function(done) {
+			let req1 = makeReq('put');
+			req1.url = '/product/1';
+			req1.body = {
+				name: 'Car',
+				price: 37.99,
+				quantity: 23
+			};
+			let res1 = makeRes();
+
+			let req2 = makeReq('get');
+			req2.url = '/product/1';
+			let res2 = makeRes();
+
+			middleware(req1, res1)
+			.then(result => {
+				expect(res1.status.calledWith(400)).to.be.false;
+				expect(res1.status.calledWith(404)).to.be.false;
+				expect(res1.json.calledWithMatch({
+					name: 'Car',
+					price: 37.99,
+					quantity: 23,
+					id: '1'
+				})).to.be.true;
+				return middleware(req2, res2);
+			})
+			.then(result => {
+				expect(res2.json.calledWithMatch({
+					name: 'Car',
+					price: 37.99,
+					quantity: 23,
+					id: 1
+				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+	});
 });

@@ -17,7 +17,7 @@ module.exports = function(req, res, urlPieces, model, config) {
 				model: urlPieces[0],
 				id: urlPieces[1]
 			});
-			res.status(404).json(err.toJSON());
+			res.status(err.status).json(err.toJSON());
 		}
 		else {
 			res.json(results.toJSON());
@@ -27,7 +27,7 @@ module.exports = function(req, res, urlPieces, model, config) {
 		let error = new Howhap(config.errors.UNKNOWN, {
 			error: err.toString()
 		});
-		res.status(500).json(error.toJSON());
+		res.status(error.status).json(error.toJSON());
 	})
 	.then(function() {
 		return Promise.resolve({
