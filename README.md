@@ -1,6 +1,8 @@
 # bookshelf api
 
-Bookshelf API is a configurable set up Express middleware that allows you to serve a RESTful API from a directory of [Bookshelf.js](http://bookshelfjs.org/) models.
+Bookshelf API is configurable Express middleware that allows you to serve a RESTful API from a directory of [Bookshelf.js](http://bookshelfjs.org/) models.
+
+`npm install --save bookshelf-api`
 
 Here's the basic usage:
 
@@ -32,6 +34,8 @@ Using the setup above you will now be able to make API requests to `/api/v1/prod
 * `POST   /api/v1/product` - Create a new product
 * `PUT    /api/v1/product/7` - Update product with an id of 7.
 * `DELETE /api/v1/product/83` - Delete the product with an id of 83.
+
+You can find a full working example in the [example](/example) directory.
 
 Bookshelf API provides a number of options that allow you to customize the behavior of the API. They should be passed in to the middleware:
 
