@@ -2,8 +2,8 @@ let Howhap = require('howhap');
 module.exports = function(req, res, urlPieces, model, config) {
 	let promise = model;
 
-	if(model.hasTimestamps.indexOf(config.deletedColumn)) {
-		promise = promise.where(config.deletedColumn, null);
+	if(model.hasTimestamps.indexOf(config.deletedAttribute)) {
+		promise = promise.where(config.deletedAttribute, null);
 	}
 
 	// Get individual record

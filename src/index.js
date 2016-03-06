@@ -12,7 +12,7 @@ module.exports = function(config) {
 	let defaultConfig = {
 		putBehavior: 'upsert',
 		hardDelete: false,
-		deletedColumn: 'deletedAt',
+		deletedAttribute: 'deletedAt',
 		errors: errors
 	};
 

@@ -40,7 +40,7 @@ let options = {
 	path: './models',
 	putBehavior: 'update',
 	hardDelete: true,
-	deleteColumn: 'deletedAt',
+	deletedAttribute: 'deletedAt',
 	errors: {
 		...
 	}
@@ -86,7 +86,7 @@ let api = require('bookshelf-api')(options);
 
 A boolean specifying if DELETE requests should be *hard deletes*. Hard deleted permanently remove the record from the database (SQL DELETE statement) whereas soft deletes will simply update a column specifying when that record was deleted. The record will still exist in the database but it will not appear anymore when you make GET requests.
 
-If this option is false you should specify a column name that represents the datetime that the record was deleted (see deleteColumn below).
+If this option is false you should specify a column name that represents the datetime that the record was deleted (see deletedAttribute below).
 
 ```js
 let options = {
@@ -95,7 +95,7 @@ let options = {
 let api = require('bookshelf-api')(options);
 ```
 
-##### deleteColumn
+##### deletedAttribute
 
 *default: 'deletedAt'*
 
@@ -104,7 +104,7 @@ This option is only relevant if the *hardDelete* option is false. This option sp
 ```js
 let options = {
 	hardDelete: true,
-	deleteColumn: 'delete_date'
+	deletedAttribute: 'delete_date'
 }
 let api = require('bookshelf-api')(options);
 ```
@@ -133,7 +133,6 @@ let api = require('bookshelf-api')(options);
 
 ## To-do list
 
-* Rename deleteColumn to deleteAttribute
 * Ensure that soft deleted records cannot be updated with PUT
 * Ensure that adding model specific routes works. eg:
 

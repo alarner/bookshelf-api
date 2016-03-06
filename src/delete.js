@@ -16,7 +16,7 @@ module.exports = function(req, res, urlPieces, model, config) {
 		let result = {};
 		result[model.idAttribute] = model.id;
 		let promise = null;
-		if(model.hasTimestamps.indexOf(config.deletedColumn) >= 0 && (!req.hardDelete && !config.hardDelete || (req.hardDelete === false))) {
+		if(model.hasTimestamps.indexOf(config.deletedAttribute) >= 0 && (!req.hardDelete && !config.hardDelete || (req.hardDelete === false))) {
 			let updatedData = {};
 			updatedData[model.hasTimestamps[2]] = new Date();
 			promise = model.save(updatedData, {method: 'update'})
