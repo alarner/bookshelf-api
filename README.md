@@ -8,8 +8,9 @@ Here's the basic usage:
 
 ```js
 let express = require('express');
+let path = require('path');
 let api = require('bookshelf-api')({
-	path: './models'
+	path: path.join(__dirname, 'models')
 });
 
 let app = express();
