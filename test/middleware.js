@@ -221,6 +221,31 @@ describe('middleware.js', function() {
 			.catch(done);
 		});
 
+		it('should not allow putting to a soft deleted record', function(done) {
+			let req1 = makeReq('put');
+			req1.url = '/product/5';
+			req1.body = {
+				name: 'Car',
+				price: 37.99,
+				quantity: 23
+			};
+			let res1 = makeRes();
+			middleware(req1, res1)
+			.then(result => {
+				expect(res1.status.calledWith(404)).to.be.true;
+				expect(res1.json.calledWith({
+					message: 'Could not get "{{ model }}" with id {{ id }}.',
+					status: 404,
+					params: {
+						model: 'product',
+						id: '5'
+					}
+				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+
 		it('should create the record if no id is provided and putBehavior is set to upsert', function(done) {
 			let req1 = makeReq('put');
 			req1.url = '/product';

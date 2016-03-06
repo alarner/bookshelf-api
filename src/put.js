@@ -17,7 +17,11 @@ module.exports = function(req, res, urlPieces, model, config) {
 		if(config.putBehavior && config.putBehavior.toLowerCase() === 'update') {
 			options.method = 'update';
 		}
-		return model.save(req.body, options).then(savedModel => {
+		let promise = model;
+		if(model.hasTimestamps.indexOf(config.deletedAttribute) >= 0) {
+			promise = promise.where(config.deletedAttribute, null);
+		}
+		return promise.save(req.body, options).then(savedModel => {
 			res.json(savedModel.toJSON());
 		})
 		.catch(err => {
