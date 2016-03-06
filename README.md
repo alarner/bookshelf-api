@@ -133,7 +133,6 @@ let api = require('bookshelf-api')(options);
 
 ## To-do list
 
-* Ensure that soft deleted records cannot be updated with PUT
 * Ensure that adding model specific routes works. eg:
 
 	```js
