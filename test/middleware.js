@@ -35,9 +35,34 @@ describe('middleware.js', function() {
 			.catch(done);
 		});
 
+		it('should properly process get requests with no id and a url prefix', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/api/v1/product';
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(result.urlPieces.length).to.equal(1);
+				expect(result.model instanceof Product).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+
 		it('should properly process get requests with an id', function(done) {
 			let req = makeReq('get');
 			req.originalUrl = '/product/7';
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(result.urlPieces.length).to.equal(2);
+				expect(result.urlPieces[1]).to.equal('7');
+				expect(result.model instanceof Product).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+
+		it('should properly process get requests with an id and a url prefix', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/foo/bar/product/7';
 			let res = makeRes();
 			middleware(req, res).then(result => {
 				expect(result.urlPieces.length).to.equal(2);
