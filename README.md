@@ -130,17 +130,3 @@ let options = {
 }
 let api = require('bookshelf-api')(options);
 ```
-
-## To-do list
-
-* Ensure that adding model specific routes works. eg:
-
-	```js
-	let express = require('express');
-	let api = require('bookshelf-api')({
-		path: './models'
-	});
-
-	let app = express();
-	app.use('/api/v1/product', isLoggedIn, api);
-	```

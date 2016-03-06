@@ -3,42 +3,57 @@ let get = require('./get');
 let post = require('./post');
 let put = require('./put');
 let del = require('./delete');
+let url = require('url');
+let path = require('path');
 
 module.exports = function(models, config) {
 	return function(req, res, next) {
-		let url = _.trim(req.url, '/');
-		let urlPieces = url.split('/');
+		let parsed = url.parse(_.trim(req.originalUrl, path.sep));
+		let urlPieces = parsed.pathname.split(path.sep);
 		let method = req.method.toLowerCase();
 
 		if(!urlPieces.length) {
 			return next();
 		}
 
-		urlPieces[0] = urlPieces[0].toLowerCase();
+		let modelName = null;
+		let modelId = null;
 
-		if(!models.hasOwnProperty(urlPieces[0])) {
-			return next();
+		if(!models.hasOwnProperty(urlPieces[urlPieces.length-1].toLowerCase())) {
+			if(urlPieces.length < 2 || !models.hasOwnProperty(urlPieces[urlPieces.length-2].toLowerCase())) {
+				return next();
+			}
+			else {
+				modelName = urlPieces[urlPieces.length-2].toLowerCase();
+				modelId = urlPieces[urlPieces.length-1];
+			}
+		}
+		else {
+			modelName = urlPieces[urlPieces.length-1].toLowerCase();
 		}
 
-		let Model = models[urlPieces[0]];
+		let filteredUrlPieces = [modelName];
+		let Model = models[modelName];
 		let model = new Model();
-		if(urlPieces.length > 1) {
+		if(modelId !== null) {
 			let params = {};
-			params[model.idAttribute] = urlPieces[1];
+			params[model.idAttribute] = modelId;
 			model = Model.forge(params);
+			filteredUrlPieces.push(modelId);
 		}
+
 
 		if(method === 'get') {
-			return get(req, res, urlPieces, model, config);
+			return get(req, res, filteredUrlPieces, model, config);
 		}
 		else if(method === 'post') {
-			return post(req, res, urlPieces, model, config);
+			return post(req, res, filteredUrlPieces, model, config);
 		}
 		else if(method === 'put') {
-			return put(req, res, urlPieces, model, config);
+			return put(req, res, filteredUrlPieces, model, config);
 		}
 		else if(method === 'delete') {
-			return del(req, res, urlPieces, model, config);
+			return del(req, res, filteredUrlPieces, model, config);
 		}
 	};
 };
