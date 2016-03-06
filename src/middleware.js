@@ -38,43 +38,7 @@ module.exports = function(models, config) {
 			return put(req, res, urlPieces, model, config);
 		}
 		else if(method === 'delete') {
-			return delete(req, res, urlPieces, model, config);
-			if(urlPieces.length < 2) {
-				res.status(404).json({
-					message: 'Record not found',
-					status: 404
-				});
-			}
-			else {
-				if(model.hasTimestamps.length >= 3 && !req.body.hard) {
-					let updatedData = {};
-					updatedData[model.hasTimestamps[2]] = new Date();
-					model.save(updatedData).then(
-						function(savedModel) {
-							res.json(savedModel.toJSON());
-						},
-						function(err) {
-							res.status(500).json({
-								message: err.toString(),
-								status: 500
-							});
-						}
-					);
-				}
-				else {
-					model.destroy().then(
-						function(destroyedModel) {
-							res.json(destroyedModel.toJSON());
-						},
-						function(err) {
-							res.status(500).json({
-								message: err.toString(),
-								status: 500
-							});
-						}
-					);
-				}
-			}
+			return del(req, res, urlPieces, model, config);
 		}
 	};
 };

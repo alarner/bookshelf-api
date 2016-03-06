@@ -14,5 +14,5 @@ module.exports = function(req, res, urlPieces, model, config) {
 			urlPieces: urlPieces,
 			model: model
 		});
-	});;
+	});
 };

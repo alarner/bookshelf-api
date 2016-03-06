@@ -10,7 +10,8 @@ exports.seed = function(knex, Promise) {
 			price: 60,
 			quantity: 108,
 			createdAt: '2015-03-05 07:12:33',
-			updatedAt: null
+			updatedAt: null,
+			deletedAt: null
 		}),
 		knex('products').insert({
 			id: 2,
@@ -18,7 +19,8 @@ exports.seed = function(knex, Promise) {
 			price: 6.5,
 			quantity: 38,
 			createdAt: '2015-03-05 07:12:33',
-			updatedAt: null
+			updatedAt: null,
+			deletedAt: null
 		}),
 		knex('products').insert({
 			id: 3,
@@ -26,7 +28,8 @@ exports.seed = function(knex, Promise) {
 			price: 42.99,
 			quantity: 74,
 			createdAt: '2015-03-05 07:12:33',
-			updatedAt: null
+			updatedAt: null,
+			deletedAt: null
 		}),
 		knex('products').insert({
 			id: 4,
@@ -34,7 +37,17 @@ exports.seed = function(knex, Promise) {
 			price: 22.45,
 			quantity: 231,
 			createdAt: '2015-03-05 07:12:33',
-			updatedAt: null
+			updatedAt: null,
+			deletedAt: null
+		}),
+		knex('products').insert({
+			id: 5,
+			name: 'Ugly Hat',
+			price: 22.45,
+			quantity: 231,
+			createdAt: '2015-03-05 07:12:33',
+			updatedAt: null,
+			deletedAt: '2015-03-05 07:12:33'
 		})
 	);
 };

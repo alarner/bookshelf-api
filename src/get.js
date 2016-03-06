@@ -1,14 +1,18 @@
 let Howhap = require('howhap');
 module.exports = function(req, res, urlPieces, model, config) {
-	let promise = null;
+	let promise = model;
+
+	if(model.hasTimestamps.indexOf(config.deletedColumn)) {
+		promise = promise.where(config.deletedColumn, null);
+	}
 
 	// Get individual record
 	if(urlPieces.length > 1) {
-		promise = model.fetch();
+		promise = promise.fetch();
 	}
 	// Get all records
 	else {
-		promise = model.fetchAll();
+		promise = promise.fetchAll();
 	}
 
 	return promise.then(function(results) {

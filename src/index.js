@@ -9,7 +9,14 @@ module.exports = function(config) {
 		throw new Howhap(errors.BAD_CONFIG);
 	}
 
-	config.errors = _.extend(config.errors || {}, errors);
+	let defaultConfig = {
+		putBehavior: 'upsert',
+		hardDelete: false,
+		deletedColumn: 'deletedAt',
+		errors: errors
+	};
+
+	config = _.extend(defaultConfig, config);
 
 	if(!config.path) {
 		throw new Howhap(config.errors.MISSING_PATH);
