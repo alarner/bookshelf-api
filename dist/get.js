@@ -4,7 +4,7 @@ var Howhap = require('howhap');
 module.exports = function (req, res, urlPieces, model, config) {
 	var promise = model;
 
-	if (model.hasTimestamps.indexOf(config.deletedAttribute)) {
+	if (model.hasTimestamps.indexOf(config.deletedAttribute) !== -1) {
 		promise = promise.where(config.deletedAttribute, null);
 	}
 
@@ -16,7 +16,6 @@ module.exports = function (req, res, urlPieces, model, config) {
 	else {
 			promise = promise.fetchAll();
 		}
-
 	return promise.then(function (results) {
 		if (!results) {
 			var err = new Howhap(config.errors.RECORD_NOT_FOUND, {
