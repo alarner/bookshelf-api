@@ -140,6 +140,16 @@ describe('middleware.js', function() {
 			})
 			.catch(done);
 		});
+		it('should be able to get a list of all records when the model has no deletedAt timestamp', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/authentication';
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.calledWith([])).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
 		it('should be able to get a single record by id', function(done) {
 			let req = makeReq('get');
 			req.originalUrl = '/product/3';
