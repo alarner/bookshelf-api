@@ -306,7 +306,7 @@ describe('middleware.js', function() {
 			req1.body = {
 				name: 'Car',
 				price: 37.99,
-				quantity: 23
+				quantity: 23 
 			};
 			let res1 = makeRes();
 
@@ -405,22 +405,22 @@ describe('middleware.js', function() {
 
 			middleware(req1, res1)
 			.then(result => {
-				expect(res1.status.calledWith(400)).to.be.false;
+				expect(res1.status.calledWith(400), 'Status not 400').to.be.false;
 				expect(res1.json.calledWithMatch({
 					id: 6,
 					name: 'Car',
 					price: 37.99,
 					quantity: 23
-				})).to.be.true;
+				}), 'First json call').to.be.true;
 				return middleware(req2, res2);
 			})
 			.then(result => {
 				expect(res2.json.calledWithMatch({
 					name: 'Car',
-					price: 37.99,
+					price: '37.99',
 					quantity: 23,
 					id: 6
-				})).to.be.true;
+				}), 'Second json call').to.be.true;
 				done();
 			})
 			.catch(done);
@@ -484,7 +484,7 @@ describe('middleware.js', function() {
 			.then(result => {
 				expect(res2.json.calledWithMatch({
 					name: 'Car',
-					price: 37.99,
+					price: '37.99',
 					quantity: 23,
 					id: 1
 				})).to.be.true;
