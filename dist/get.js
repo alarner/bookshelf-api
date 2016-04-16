@@ -14,6 +14,13 @@ module.exports = function (req, res, urlPieces, model, config) {
 	}
 	// Get all records
 	else {
+			if (req.query && req.query.where) {
+				if (Array.isArray(req.query.where)) {
+					promise = promise.where.apply(promise, req.query.where);
+				} else if (Object.prototype.toString.call(req.query.where) == '[object Object]') {
+					promise = promise.where(req.query.where);
+				}
+			}
 			promise = promise.fetchAll();
 		}
 	return promise.then(function (results) {
