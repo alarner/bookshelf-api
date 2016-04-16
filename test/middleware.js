@@ -38,7 +38,9 @@ describe('middleware.js', function() {
 	});
 
 	beforeEach(function(done) {
-		bookshelf.knex.seed.run().then(() => done());
+		bookshelf.knex.seed.run().then(() => {
+			done();
+		});
 	});
 
 	describe('processing', function() {
@@ -125,36 +127,36 @@ describe('middleware.js', function() {
 					{
 						id: 1,
 						name: 'Pants',
-						price: 60,
+						price: '60.00',
 						quantity: 108,
-						createdAt: '2015-03-05 07:12:33',
+						createdAt: new Date('2015-03-05 07:12:33'),
 						updatedAt: null,
 						deletedAt: null
 					},
 					{
 						id: 2,
 						name: 'Socks',
-						price: 6.5,
+						price: '6.50',
 						quantity: 38,
-						createdAt: '2015-03-05 07:12:33',
+						createdAt: new Date('2015-03-05 07:12:33'),
 						updatedAt: null,
 						deletedAt: null
 					},
 					{
 						id: 3,
 						name: 'Shirt',
-						price: 42.99,
+						price: '42.99',
 						quantity: 74,
-						createdAt: '2015-03-05 07:12:33',
+						createdAt: new Date('2015-03-05 07:12:33'),
 						updatedAt: null,
 						deletedAt: null
 					},
 					{
 						id: 4,
 						name: 'Hat',
-						price: 22.45,
+						price: '22.45',
 						quantity: 231,
-						createdAt: '2015-03-05 07:12:33',
+						createdAt: new Date('2015-03-05 07:12:33'),
 						updatedAt: null,
 						deletedAt: null
 					} 
@@ -181,9 +183,9 @@ describe('middleware.js', function() {
 				expect(res.json.calledWith({
 					id: 3,
 					name: 'Shirt',
-					price: 42.99,
+					price: '42.99',
 					quantity: 74,
-					createdAt: '2015-03-05 07:12:33',
+					createdAt: new Date('2015-03-05 07:12:33'),
 					updatedAt: null,
 					deletedAt: null
 				})).to.be.true;
@@ -258,9 +260,9 @@ describe('middleware.js', function() {
 				expect(res.json.firstCall.args[0][0]).to.deep.equal({
 					id: 1,
 					name: 'Pants',
-					price: '60',
+					price: '60.00',
 					quantity: 108,
-					createdAt: new Date('2015-03-05'),
+					createdAt: new Date('2015-03-05 07:12:33'),
 					updatedAt: null,
 					deletedAt: null
 				});
@@ -269,7 +271,7 @@ describe('middleware.js', function() {
 					name: 'Hat',
 					price: '22.45',
 					quantity: 231,
-					createdAt: new Date('2015-03-05'),
+					createdAt: new Date('2015-03-05 07:12:33'),
 					updatedAt: null,
 					deletedAt: null
 				});
@@ -314,22 +316,19 @@ describe('middleware.js', function() {
 
 			middleware(req1, res1)
 			.then(result => {
-				expect(res1.status.calledWith(400)).to.be.false;
-				expect(res1.json.calledWithMatch({
-					name: 'Car',
-					price: 37.99,
-					quantity: 23,
-					id: 6
-				})).to.be.true;
+				expect(res1.status.calledWith(400), 'Not called with 400 status').to.be.false;
+				expect(res1.json.firstCall.args[0].id, 'First json called with correct response id').to.equal(6);
+				expect(res1.json.firstCall.args[0].name, 'First json called with correct response name').to.equal('Car');
+				expect(res1.json.firstCall.args[0].price, 'First json called with correct response price').to.equal(37.99);
+				expect(res1.json.firstCall.args[0].quantity, 'First json called with correct response quantity').to.equal(23);
 				return middleware(req2, res2);
 			})
 			.then(result => {
-				expect(res2.json.calledWithMatch({
-					name: 'Car',
-					price: 37.99,
-					quantity: 23,
-					id: 6
-				})).to.be.true;
+				expect(res2.status.calledWith(400), 'Not called with 400 status').to.be.false;
+				expect(res2.json.firstCall.args[0].id, 'Second json called with correct response id').to.equal(6);
+				expect(res2.json.firstCall.args[0].name, 'Second json called with correct response name').to.equal('Car');
+				expect(res2.json.firstCall.args[0].price, 'Second json called with correct response price').to.equal('37.99');
+				expect(res2.json.firstCall.args[0].quantity, 'Second json called with correct response quantity').to.equal(23);
 				done();
 			})
 			.catch(done);
