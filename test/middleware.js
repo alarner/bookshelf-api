@@ -6,6 +6,29 @@ let path = require('path');
 let middleware = null;
 let Product = null;
 
+// bookshelf.knex.client.on('start', function listen(builder) {
+// 	var startTime = process.hrtime();
+// 	var group = []; // captured for this builder
+
+// 	builder.on('query', function(query) {
+// 		group.push(query);
+// 	});
+// 	builder.on('end', function() {
+// 		// all queries are completed at this point.
+// 		// in the future, it'd be good to separate out each individual query,
+// 		// but for now, this isn't something that knex supports. see the
+// 		// discussion here for details:
+// 		// https://github.com/tgriesser/knex/pull/335#issuecomment-46787879
+// 		var diff = process.hrtime(startTime);
+// 		var ms = diff[0] * 1e3 + diff[1] * 1e-6;
+// 		group.forEach(function(query) {
+// 			query.duration = ms.toFixed(3);
+// 		});
+// 		// console.log(group);
+// 		bookshelf.knex.client.removeListener('start', listen);
+// 	});
+// });
+
 describe('middleware.js', function() {
 	before(function() {
 		Product = require('./fixtures/models/Product');
@@ -164,6 +187,92 @@ describe('middleware.js', function() {
 					updatedAt: null,
 					deletedAt: null
 				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+		it('should be able to filter by a single where clause object', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			req.query = {
+				where: {
+					name: 'Hat'
+				}
+			};
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.firstCall.args[0].length).to.equal(1);
+				expect(res.json.firstCall.args[0][0].id).to.equal(4);
+				expect(res.json.firstCall.args[0][0].name).to.equal('Hat');
+				expect(res.json.firstCall.args[0][0].price).to.equal('22.45');
+				expect(res.json.firstCall.args[0][0].quantity).to.equal(231);
+				done();
+			})
+			.catch(done);
+		});
+		it('should be able to filter by a multi-where clause object with no results', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			req.query = {
+				where: {
+					name: 'Hat',
+					id: 3
+				}
+			};
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.firstCall.args[0].length).to.equal(0);
+				done();
+			})
+			.catch(done);
+		});
+		it('should be able to filter by a multi-where clause object with results', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			req.query = {
+				where: {
+					name: 'Shirt',
+					quantity: 74
+				}
+			};
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.firstCall.args[0].length).to.equal(1);
+				expect(res.json.firstCall.args[0][0].id).to.equal(3);
+				expect(res.json.firstCall.args[0][0].name).to.equal('Shirt');
+				expect(res.json.firstCall.args[0][0].price).to.equal('42.99');
+				expect(res.json.firstCall.args[0][0].quantity).to.equal(74);
+				done();
+			})
+			.catch(done);
+		});
+		it('should be able to filter by a where clause array', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			req.query = {
+				where: ['quantity', '>', 100]
+			};
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.firstCall.args[0].length).to.equal(2);
+				expect(res.json.firstCall.args[0][0]).to.deep.equal({
+					id: 1,
+					name: 'Pants',
+					price: '60',
+					quantity: 108,
+					createdAt: new Date('2015-03-05'),
+					updatedAt: null,
+					deletedAt: null
+				});
+				expect(res.json.firstCall.args[0][1]).to.deep.equal({
+					id: 4,
+					name: 'Hat',
+					price: '22.45',
+					quantity: 231,
+					createdAt: new Date('2015-03-05'),
+					updatedAt: null,
+					deletedAt: null
+				});
 				done();
 			})
 			.catch(done);
