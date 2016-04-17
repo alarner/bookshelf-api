@@ -104,13 +104,14 @@ describe('middleware.js', function() {
 			req.body = {
 				name: 'Car',
 				price: 37.99,
-				quantity: 23
+				quantity: 23,
+				categoryId: 2
 			};
 			let res = makeRes();
 			middleware(req, res).then(result => {
-				expect(result.urlPieces.length).to.equal(1);
-				expect(result.model instanceof Product).to.be.true;
-				expect(res.status.calledWith(400)).to.be.false;
+				expect(result.urlPieces.length, 'correct url pieces length').to.equal(1);
+				expect(result.model instanceof Product, 'correct model type').to.be.true;
+				expect(res.status.calledWith(400), 'not 400 status code').to.be.false;
 				done();
 			})
 			.catch(done);
@@ -131,7 +132,8 @@ describe('middleware.js', function() {
 						quantity: 108,
 						createdAt: new Date('2015-03-05 07:12:33'),
 						updatedAt: null,
-						deletedAt: null
+						deletedAt: null,
+						categoryId: 1
 					},
 					{
 						id: 2,
@@ -140,7 +142,8 @@ describe('middleware.js', function() {
 						quantity: 38,
 						createdAt: new Date('2015-03-05 07:12:33'),
 						updatedAt: null,
-						deletedAt: null
+						deletedAt: null,
+						categoryId: 1
 					},
 					{
 						id: 3,
@@ -149,7 +152,8 @@ describe('middleware.js', function() {
 						quantity: 74,
 						createdAt: new Date('2015-03-05 07:12:33'),
 						updatedAt: null,
-						deletedAt: null
+						deletedAt: null,
+						categoryId: 1
 					},
 					{
 						id: 4,
@@ -158,7 +162,18 @@ describe('middleware.js', function() {
 						quantity: 231,
 						createdAt: new Date('2015-03-05 07:12:33'),
 						updatedAt: null,
-						deletedAt: null
+						deletedAt: null,
+						categoryId: 1
+					},
+					{
+						id: 6,
+						name: 'Smartphone',
+						price: '220.45',
+						quantity: 231,
+						createdAt: new Date('2015-03-05 07:12:33'),
+						updatedAt: null,
+						deletedAt: null,
+						categoryId: 2
 					} 
 				])).to.be.true;
 				done();
@@ -187,7 +202,8 @@ describe('middleware.js', function() {
 					quantity: 74,
 					createdAt: new Date('2015-03-05 07:12:33'),
 					updatedAt: null,
-					deletedAt: null
+					deletedAt: null,
+					categoryId: 1
 				})).to.be.true;
 				done();
 			})
@@ -256,7 +272,7 @@ describe('middleware.js', function() {
 			};
 			let res = makeRes();
 			middleware(req, res).then(result => {
-				expect(res.json.firstCall.args[0].length).to.equal(2);
+				expect(res.json.firstCall.args[0].length, 'correct length').to.equal(3);
 				expect(res.json.firstCall.args[0][0]).to.deep.equal({
 					id: 1,
 					name: 'Pants',
@@ -264,8 +280,9 @@ describe('middleware.js', function() {
 					quantity: 108,
 					createdAt: new Date('2015-03-05 07:12:33'),
 					updatedAt: null,
-					deletedAt: null
-				});
+					deletedAt: null,
+					categoryId: 1
+				}, 'correct first product');
 				expect(res.json.firstCall.args[0][1]).to.deep.equal({
 					id: 4,
 					name: 'Hat',
@@ -273,8 +290,19 @@ describe('middleware.js', function() {
 					quantity: 231,
 					createdAt: new Date('2015-03-05 07:12:33'),
 					updatedAt: null,
-					deletedAt: null
-				});
+					deletedAt: null,
+					categoryId: 1
+				}, 'correct second product');
+				expect(res.json.firstCall.args[0][2]).to.deep.equal({
+					id: 6,
+					name: 'Smartphone',
+					price: '220.45',
+					quantity: 231,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 2
+				}, 'correct third product');
 				done();
 			})
 			.catch(done);
@@ -306,18 +334,19 @@ describe('middleware.js', function() {
 			req1.body = {
 				name: 'Car',
 				price: 37.99,
-				quantity: 23 
+				quantity: 23,
+				categoryId: 2
 			};
 			let res1 = makeRes();
 
 			let req2 = makeReq('get');
-			req2.originalUrl = '/product/6';
+			req2.originalUrl = '/product/7';
 			let res2 = makeRes();
 
 			middleware(req1, res1)
 			.then(result => {
 				expect(res1.status.calledWith(400), 'Not called with 400 status').to.be.false;
-				expect(res1.json.firstCall.args[0].id, 'First json called with correct response id').to.equal(6);
+				expect(res1.json.firstCall.args[0].id, 'First json called with correct response id').to.equal(7);
 				expect(res1.json.firstCall.args[0].name, 'First json called with correct response name').to.equal('Car');
 				expect(res1.json.firstCall.args[0].price, 'First json called with correct response price').to.equal(37.99);
 				expect(res1.json.firstCall.args[0].quantity, 'First json called with correct response quantity').to.equal(23);
@@ -325,7 +354,7 @@ describe('middleware.js', function() {
 			})
 			.then(result => {
 				expect(res2.status.calledWith(400), 'Not called with 400 status').to.be.false;
-				expect(res2.json.firstCall.args[0].id, 'Second json called with correct response id').to.equal(6);
+				expect(res2.json.firstCall.args[0].id, 'Second json called with correct response id').to.equal(7);
 				expect(res2.json.firstCall.args[0].name, 'Second json called with correct response name').to.equal('Car');
 				expect(res2.json.firstCall.args[0].price, 'Second json called with correct response price').to.equal('37.99');
 				expect(res2.json.firstCall.args[0].quantity, 'Second json called with correct response quantity').to.equal(23);
@@ -395,19 +424,20 @@ describe('middleware.js', function() {
 			req1.body = {
 				name: 'Car',
 				price: 37.99,
-				quantity: 23
+				quantity: 23,
+				categoryId: 2
 			};
 			let res1 = makeRes();
 
 			let req2 = makeReq('get');
-			req2.originalUrl = '/product/6';
+			req2.originalUrl = '/product/7';
 			let res2 = makeRes();
 
 			middleware(req1, res1)
 			.then(result => {
 				expect(res1.status.calledWith(400), 'Status not 400').to.be.false;
 				expect(res1.json.calledWithMatch({
-					id: 6,
+					id: 7,
 					name: 'Car',
 					price: 37.99,
 					quantity: 23
@@ -419,7 +449,7 @@ describe('middleware.js', function() {
 					name: 'Car',
 					price: '37.99',
 					quantity: 23,
-					id: 6
+					id: 7
 				}), 'Second json call').to.be.true;
 				done();
 			})
