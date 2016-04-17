@@ -6,9 +6,14 @@ module.exports = function(req, res, urlPieces, model, config) {
 		promise = promise.where(config.deletedAttribute, null);
 	}
 
+	let fetchParams = {};
+	if(req.query && Array.isArray(req.query.withRelated)) {
+		fetchParams.withRelated = req.query.withRelated;
+	}
+
 	// Get individual record
 	if(urlPieces.length > 1) {
-		promise = promise.fetch();
+		promise = promise.fetch(fetchParams);
 	}
 	// Get all records
 	else {
@@ -20,7 +25,7 @@ module.exports = function(req, res, urlPieces, model, config) {
 				promise = promise.where(req.query.where);
 			}
 		}
-		promise = promise.fetchAll();
+		promise = promise.fetchAll(fetchParams);
 	}
 	return promise.then(function(results) {
 		if(!results) {

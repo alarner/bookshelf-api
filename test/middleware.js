@@ -307,6 +307,63 @@ describe('middleware.js', function() {
 			})
 			.catch(done);
 		});
+		it('should be able to include related models', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			req.query = {
+				where: {
+					name: 'Shirt',
+					quantity: 74
+				},
+				withRelated: ['category']
+			};
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.firstCall.args[0].length).to.equal(1);
+				expect(res.json.firstCall.args[0][0].id).to.equal(3);
+				expect(res.json.firstCall.args[0][0].name).to.equal('Shirt');
+				expect(res.json.firstCall.args[0][0].price).to.equal('42.99');
+				expect(res.json.firstCall.args[0][0].quantity).to.equal(74);
+				expect(res.json.firstCall.args[0][0].category).to.deep.equal({
+					id: 1,
+					name: 'Apparel',
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null
+				});
+				done();
+			})
+			.catch(done);
+		});
+		it('should be able to get a single record by id with related models', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product/6';
+			req.query = {
+				withRelated: ['category']
+			};
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.calledWith({
+					id: 6,
+					name: 'Smartphone',
+					price: '220.45',
+					quantity: 231,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 2,
+					category: {
+						id: 2,
+						name: 'Electronics',
+						createdAt: new Date('2015-03-05 07:12:33'),
+						updatedAt: null,
+						deletedAt: null
+					}
+				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
 		it('should return an error when trying to query a record that doesn\'t exist', function(done) {
 			let req = makeReq('get');
 			req.originalUrl = '/product/100';
