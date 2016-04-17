@@ -135,3 +135,46 @@ let options = {
 }
 let api = require('bookshelf-api')(options);
 ```
+
+## Where clauses
+
+The bookshelf-api module supports querying the API via where clauses in the query parameters of your GET requests. There are two supported formats:
+
+### Object format
+
+```js
+$.ajax({
+	url: '/api/v1/products',
+	method: 'get',
+	accepts: 'application/json',
+	data: {
+		// Queries all products where the price is 234
+		// and the name is 'Pants'
+		where: {
+			price: 234,
+			name: 'Pants'
+		}
+	}
+});
+```
+
+### Array format
+
+```js
+$.ajax({
+	url: '/api/v1/products',
+	method: 'get',
+	accepts: 'application/json',
+	data: {
+		// Queries all products where the price is
+		// greater than 100
+		where: ['price', '>', 100]
+	}
+});
+```
+
+#### Other operators for Array format
+
+- Not equal: `['price', '<>', 0]`
+- Like: `['name', 'LIKE', 'Hat%']`
+- Not Like: `['name', 'NOT LIKE', 'Hat%']`
