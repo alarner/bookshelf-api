@@ -173,8 +173,49 @@ $.ajax({
 });
 ```
 
-#### Other operators for Array format
+#### Some other operators for Array format
 
 - Not equal: `['price', '<>', 0]`
 - Like: `['name', 'LIKE', 'Hat%']`
 - Not Like: `['name', 'NOT LIKE', 'Hat%']`
+
+## Pulling related models
+
+The bookshelf-api module supports querying related models.
+
+```js
+$.ajax({
+	url: '/api/v1/products/1',
+	method: 'get',
+	accepts: 'application/json',
+	data: {
+		// Queries the product with id 1 and includes
+		// the associated manufacturer
+		withRelated: ['manufacturer']
+	}
+});
+```
+
+This works when querying both single records and lists of records and depnds on your Bookshelf models being configured correctly. For example, your models for the above example might look like:
+
+#### Product.js
+```js
+require('./Manufacturer');
+module.exports = bookshelf.model('Product', {
+	tableName: 'products',
+	hasTimestamps: ['createdAt', 'updatedAt', 'deletedAt'],
+	manufacturer: function() {
+		return this.belongsTo('Manufacturer', 'manufacturerId');
+	}
+});
+```
+
+> Notice that the `Product` model has a `manufacturer` method. This is how the `withRelated` array knows how to associate a manufacturer with the product.
+
+#### Manufacturer.js
+```js
+module.exports = bookshelf.model('Manufacturer', {
+	tableName: 'manufacturers',
+	hasTimestamps: ['createdAt', 'updatedAt', 'deletedAt']
+});
+```
