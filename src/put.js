@@ -1,10 +1,14 @@
-let Howhap = require('howhap');
+let HowhapList = require('howhap-list');
 module.exports = function(req, res, urlPieces, model, config) {
+	let list = new HowhapList(
+		null, 
+		{
+			availableErrors: config.errors
+		}
+	);
 	if(config.putBehavior && config.putBehavior.toLowerCase() === 'update' && urlPieces.length < 2) {
-		let err = new Howhap(config.errors.REQUIRES_ID, {
-			model: urlPieces[0]
-		});
-		res.status(err.status).json(err.toJSON());
+		list.add('REQUIRES_ID', { model: urlPieces[0] });
+		res.status(config.errors.REQUIRES_ID.status).json(list.toJSON());
 		return new Promise((resolve, reject) => {
 			resolve({
 				urlPieces: urlPieces,
@@ -25,19 +29,19 @@ module.exports = function(req, res, urlPieces, model, config) {
 			res.json(savedModel.toJSON());
 		})
 		.catch(err => {
-			let error = null;
+			let status = 500;
 			if(err.message === 'No Rows Updated') {
-				error = new Howhap(config.errors.RECORD_NOT_FOUND, {
+				list.add('RECORD_NOT_FOUND', {
 					model: urlPieces[0],
 					id: urlPieces[1]
 				});
+				status = config.errors.RECORD_NOT_FOUND.status;
 			}
 			else {
-				error = new Howhap(config.errors.UNKNOWN, {
-					error: err.toString()
-				});
+				list.add('UNKNOWN', { error: err.toString() });
+				status = config.errors.UNKNOWN.status;
 			}
-			res.status(error.status).json(error.toJSON());
+			res.status(status).json(list.toJSON());
 		})
 		.then(() => {
 			return Promise.resolve({

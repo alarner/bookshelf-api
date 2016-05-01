@@ -1,6 +1,12 @@
-let Howhap = require('howhap');
+let HowhapList = require('howhap-list');
 module.exports = function(req, res, urlPieces, model, config) {
 	let promise = model;
+	let list = new HowhapList(
+		null, 
+		{
+			availableErrors: config.errors
+		}
+	);
 
 	if(model.hasTimestamps.indexOf(config.deletedAttribute) !== -1) {
 		promise = promise.where(config.deletedAttribute, null);
@@ -29,21 +35,21 @@ module.exports = function(req, res, urlPieces, model, config) {
 	}
 	return promise.then(function(results) {
 		if(!results) {
-			let err = new Howhap(config.errors.RECORD_NOT_FOUND, {
+			list.add('RECORD_NOT_FOUND', {
 				model: urlPieces[0],
 				id: urlPieces[1]
 			});
-			res.status(err.status).json(err.toJSON());
+			res.status(config.errors.RECORD_NOT_FOUND.status).json(list.toJSON());
 		}
 		else {
 			res.json(results.toJSON());
 		}
 	})
 	.catch(function(err) {
-		let error = new Howhap(config.errors.UNKNOWN, {
+		list.add('RECORD_NOT_FOUND', {
 			error: err.toString()
 		});
-		res.status(error.status).json(error.toJSON());
+		res.status(config.errors.UNKNOWN.status).json(list.toJSON());
 	})
 	.then(function() {
 		return Promise.resolve({

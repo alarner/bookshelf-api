@@ -371,11 +371,13 @@ describe('middleware.js', function() {
 			middleware(req, res).then(result => {
 				expect(res.status.calledWith(404)).to.be.true;
 				expect(res.json.calledWith({
-					message: 'Could not get "{{ model }}" with id {{ id }}.',
-					status: 404,
-					params: {
-						model: 'product',
-						id: '100'
+					default: {
+						message: 'Could not get "{{ model }}" with id {{ id }}.',
+						status: 404,
+						params: {
+							model: 'product',
+							id: '100'
+						}
 					}
 				})).to.be.true;
 				done();
@@ -439,10 +441,12 @@ describe('middleware.js', function() {
 			.then(result => {
 				expect(res1.status.calledWith(400)).to.be.true;
 				expect(res1.json.calledWith({
-					message: 'Using {{ method }} requires that you provide an id in the url. For example "/model/1"',
-					status: 400,
-					params: {
-						model: 'product'
+					default: {
+						message: 'Using {{ method }} requires that you provide an id in the url. For example "/model/1"',
+						status: 400,
+						params: {
+							model: 'product'
+						}
 					}
 				})).to.be.true;
 				done();
@@ -463,11 +467,13 @@ describe('middleware.js', function() {
 			.then(result => {
 				expect(res1.status.calledWith(404)).to.be.true;
 				expect(res1.json.calledWith({
-					message: 'Could not get "{{ model }}" with id {{ id }}.',
-					status: 404,
-					params: {
-						model: 'product',
-						id: '5'
+					default: {
+						message: 'Could not get "{{ model }}" with id {{ id }}.',
+						status: 404,
+						params: {
+							model: 'product',
+							id: '5'
+						}
 					}
 				})).to.be.true;
 				done();
@@ -530,11 +536,13 @@ describe('middleware.js', function() {
 			.then(result => {
 				expect(res1.status.calledWith(404)).to.be.true;
 				expect(res1.json.calledWithMatch({
-					message: 'Could not get "{{ model }}" with id {{ id }}.',
-					status: 404,
-					params: {
-						model: 'product',
-						id: '100'
+					default: {
+						message: 'Could not get "{{ model }}" with id {{ id }}.',
+						status: 404,
+						params: {
+							model: 'product',
+							id: '100'
+						}
 					}
 				})).to.be.true;
 				done();
@@ -590,10 +598,12 @@ describe('middleware.js', function() {
 			.then(result => {
 				expect(res1.status.calledWith(400)).to.be.true;
 				expect(res1.json.calledWith({
-					message: 'Using {{ method }} requires that you provide an id in the url. For example "/model/1"',
-					status: 400,
-					params: {
-						model: 'product'
+					default: {
+						message: 'Using {{ method }} requires that you provide an id in the url. For example "/model/1"',
+						status: 400,
+						params: {
+							model: 'product'
+						}
 					}
 				})).to.be.true;
 				done();
@@ -609,11 +619,13 @@ describe('middleware.js', function() {
 			.then(result => {
 				expect(res1.status.calledWith(404)).to.be.true;
 				expect(res1.json.calledWith({
-					message: 'Could not get "{{ model }}" with id {{ id }}.',
-					status: 404,
-					params: {
-						model: 'product',
-						id: '100'
+					default: {
+						message: 'Could not get "{{ model }}" with id {{ id }}.',
+						status: 404,
+						params: {
+							model: 'product',
+							id: '100'
+						}
 					}
 				})).to.be.true;
 				done();
@@ -630,11 +642,13 @@ describe('middleware.js', function() {
 			.then(result => {
 				expect(res1.status.calledWith(404)).to.be.true;
 				expect(res1.json.calledWith({
-					message: 'Could not get "{{ model }}" with id {{ id }}.',
-					status: 404,
-					params: {
-						model: 'product',
-						id: '100'
+					default: {
+						message: 'Could not get "{{ model }}" with id {{ id }}.',
+						status: 404,
+						params: {
+							model: 'product',
+							id: '100'
+						}
 					}
 				})).to.be.true;
 				done();
