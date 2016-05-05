@@ -23,14 +23,33 @@ module.exports = function(req, res, urlPieces, model, config) {
 	}
 	// Get all records
 	else {
-		if(req.query && req.query.where) {
-			if(Array.isArray(req.query.where)) {
-				promise = promise.where.apply(promise, req.query.where);
+		if(req.query) {
+			// Where clause support
+			if(req.query.where) {
+				if(Array.isArray(req.query.where)) {
+					promise = promise.where.apply(promise, req.query.where);
+				}
+				else if(Object.prototype.toString.call(req.query.where) == '[object Object]') {
+					promise = promise.where(req.query.where);
+				}
 			}
-			else if(Object.prototype.toString.call(req.query.where) == '[object Object]') {
-				promise = promise.where(req.query.where);
+			
+			// Order by support
+			if(req.query.sort) {
+				let direction = req.query.direction || 'ASC';
+				direction = direction.toLowerCase();
+				promise = promise.query(
+					'orderBy',
+					req.query.sort,
+					direction
+				);
 			}
+
+			// Limit support
+
+			// Offset support
 		}
+
 		promise = promise.fetchAll(fetchParams);
 	}
 	return promise.then(function(results) {

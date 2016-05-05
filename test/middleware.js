@@ -6,29 +6,6 @@ let path = require('path');
 let middleware = null;
 let Product = null;
 
-// bookshelf.knex.client.on('start', function listen(builder) {
-// 	var startTime = process.hrtime();
-// 	var group = []; // captured for this builder
-
-// 	builder.on('query', function(query) {
-// 		group.push(query);
-// 	});
-// 	builder.on('end', function() {
-// 		// all queries are completed at this point.
-// 		// in the future, it'd be good to separate out each individual query,
-// 		// but for now, this isn't something that knex supports. see the
-// 		// discussion here for details:
-// 		// https://github.com/tgriesser/knex/pull/335#issuecomment-46787879
-// 		var diff = process.hrtime(startTime);
-// 		var ms = diff[0] * 1e3 + diff[1] * 1e-6;
-// 		group.forEach(function(query) {
-// 			query.duration = ms.toFixed(3);
-// 		});
-// 		// console.log(group);
-// 		bookshelf.knex.client.removeListener('start', listen);
-// 	});
-// });
-
 describe('middleware.js', function() {
 	before(function() {
 		Product = require('./fixtures/models/Product');
@@ -159,7 +136,7 @@ describe('middleware.js', function() {
 						id: 4,
 						name: 'Hat',
 						price: '22.45',
-						quantity: 231,
+						quantity: 233,
 						createdAt: new Date('2015-03-05 07:12:33'),
 						updatedAt: null,
 						deletedAt: null,
@@ -223,7 +200,7 @@ describe('middleware.js', function() {
 				expect(res.json.firstCall.args[0][0].id).to.equal(4);
 				expect(res.json.firstCall.args[0][0].name).to.equal('Hat');
 				expect(res.json.firstCall.args[0][0].price).to.equal('22.45');
-				expect(res.json.firstCall.args[0][0].quantity).to.equal(231);
+				expect(res.json.firstCall.args[0][0].quantity).to.equal(233);
 				done();
 			})
 			.catch(done);
@@ -287,7 +264,7 @@ describe('middleware.js', function() {
 					id: 4,
 					name: 'Hat',
 					price: '22.45',
-					quantity: 231,
+					quantity: 233,
 					createdAt: new Date('2015-03-05 07:12:33'),
 					updatedAt: null,
 					deletedAt: null,
@@ -331,6 +308,140 @@ describe('middleware.js', function() {
 					updatedAt: null,
 					deletedAt: null
 				});
+				done();
+			})
+			.catch(done);
+		});
+		it('should be able to order by a field', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			req.query = {
+				where: ['quantity', '>', 100],
+				sort: 'name'
+			};
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.firstCall.args[0].length, 'correct length').to.equal(3);
+				expect(res.json.firstCall.args[0][0]).to.deep.equal({
+					id: 4,
+					name: 'Hat',
+					price: '22.45',
+					quantity: 233,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 1
+				}, 'correct first product');
+				expect(res.json.firstCall.args[0][1]).to.deep.equal({
+					id: 1,
+					name: 'Pants',
+					price: '60.00',
+					quantity: 108,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 1
+				}, 'correct second product');
+				expect(res.json.firstCall.args[0][2]).to.deep.equal({
+					id: 6,
+					name: 'Smartphone',
+					price: '220.45',
+					quantity: 231,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 2
+				}, 'correct third product');
+				done();
+			})
+			.catch(done);
+		});
+		it('should be able to order by a field descending', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			req.query = {
+				where: ['quantity', '>', 100],
+				sort: 'price',
+				direction: 'desc'
+			};
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.firstCall.args[0].length, 'correct length').to.equal(3);
+				expect(res.json.firstCall.args[0][0]).to.deep.equal({
+					id: 6,
+					name: 'Smartphone',
+					price: '220.45',
+					quantity: 231,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 2
+				}, 'correct first product');
+				expect(res.json.firstCall.args[0][1]).to.deep.equal({
+					id: 1,
+					name: 'Pants',
+					price: '60.00',
+					quantity: 108,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 1
+				}, 'correct second product');
+				expect(res.json.firstCall.args[0][2]).to.deep.equal({
+					id: 4,
+					name: 'Hat',
+					price: '22.45',
+					quantity: 233,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 1
+				}, 'correct third product');
+				done();
+			})
+			.catch(done);
+		});
+		it('should be able to order by a field ascending', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			req.query = {
+				where: ['quantity', '>', 100],
+				sort: 'quantity',
+				direction: 'asc'
+			};
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.firstCall.args[0].length, 'correct length').to.equal(3);
+				expect(res.json.firstCall.args[0][0]).to.deep.equal({
+					id: 1,
+					name: 'Pants',
+					price: '60.00',
+					quantity: 108,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 1
+				}, 'correct first product');
+				expect(res.json.firstCall.args[0][1]).to.deep.equal({
+					id: 6,
+					name: 'Smartphone',
+					price: '220.45',
+					quantity: 231,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 2
+				}, 'correct second product');
+				expect(res.json.firstCall.args[0][2]).to.deep.equal({
+					id: 4,
+					name: 'Hat',
+					price: '22.45',
+					quantity: 233,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 1
+				}, 'correct third product');
 				done();
 			})
 			.catch(done);

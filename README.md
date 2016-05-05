@@ -219,3 +219,29 @@ module.exports = bookshelf.model('Manufacturer', {
 	hasTimestamps: ['createdAt', 'updatedAt', 'deletedAt']
 });
 ```
+
+## Ordering results
+
+When you make GET requests you can optionally specify a column to use for sorting the resulting records as well as a sort direction.
+
+### sort
+
+The sort query parameter can be the name of any column on the model that you are querying.
+
+### direction
+
+The direction query parameter can be either `asc` (for ascending order) or `desc` (for descending order).
+
+### Example
+
+```js
+$.ajax({
+	url: '/api/v1/products/1',
+	method: 'get',
+	accepts: 'application/json',
+	data: {
+		sort: 'price',
+		direction: 'desc'
+	}
+});
+```

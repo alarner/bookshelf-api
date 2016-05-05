@@ -22,3 +22,10 @@ let knex = require('knex')({
 });
 global.bookshelf = require('bookshelf')(knex);
 bookshelf.plugin('registry');
+
+// knex.client.on('start', function listen(builder) {
+// 	builder.on('query', function(query) {
+// 		console.log(query.sql);
+// 		console.log(query.bindings);
+// 	});
+// });

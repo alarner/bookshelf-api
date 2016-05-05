@@ -120,7 +120,7 @@ exports.seed = function(knex, Promise) {
 		return knex('products').insert({
 			name: 'Hat',
 			price: 22.45,
-			quantity: 231,
+			quantity: 233,
 			createdAt: '2015-03-05 07:12:33',
 			updatedAt: null,
 			deletedAt: null,
