@@ -4,6 +4,12 @@ exports.seed = function(knex, Promise) {
 		return knex.schema.dropTableIfExists('categories');
 	})
 	.then(() => {
+		return knex.schema.dropTableIfExists('authentication');
+	})
+	.then(() => {
+		return knex.schema.dropTableIfExists('users');
+	})
+	.then(() => {
 		return knex.schema.createTable('categories', function(t) {
 			t.increments('id').unsigned().primary();
 			t.dateTime('createdAt').notNull();
@@ -28,6 +34,36 @@ exports.seed = function(knex, Promise) {
 				.notNull()
 				.references('id')
 				.inTable('categories')
+				.onDelete('CASCADE');
+		});
+	})
+	.then(() => {
+		return knex.schema.createTable('users', function(t) {
+			t.increments('id').unsigned().primary();
+			t.dateTime('createdAt').notNull();
+			t.dateTime('updatedAt').nullable();
+			t.dateTime('deletedAt').nullable();
+
+			t.string('firstName').nullable();
+			t.string('lastName').nullable();
+			t.string('email').nullable();
+		});
+	})
+	.then(() => {
+		return knex.schema.createTable('authentication', function(t) {
+			t.increments('id').unsigned().primary();
+			t.dateTime('createdAt').notNull();
+			t.dateTime('updatedAt').nullable();
+
+			t.string('type').notNull();
+			t.string('identifier').notNull();
+			t.string('password').nullable();
+			t.json('data').nullable();
+			t.integer('userId')
+				.unsigned()
+				.notNull()
+				.references('id')
+				.inTable('users')
 				.onDelete('CASCADE');
 		});
 	})

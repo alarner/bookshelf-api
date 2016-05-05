@@ -34,6 +34,10 @@ module.exports = function(config) {
 	}
 
 	let models = files
+	.filter(function(file) {
+		// Ignore non-javascript files and hidden files.
+		return (path.extname(file) === '.js' && file.charAt(0) !== '.');
+	})
 	.map(function(file) {
 		return {
 			model: require(path.join(config.path, file)),
