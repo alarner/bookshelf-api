@@ -5,6 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var Howhap = require('howhap');
 var errors = require('./errors');
+var getStack = require('./get-stack');
 
 module.exports = function (config) {
 	if (!_.isObject(config)) {
@@ -24,17 +25,30 @@ module.exports = function (config) {
 		throw new Howhap(config.errors.MISSING_PATH);
 	}
 
+	var originalPath = config.path;
+
+	// Relative path
+	if (!path.isAbsolute(config.path)) {
+		var stack = getStack();
+		stack.shift();
+		var callingFilePath = stack.shift().getFileName();
+		config.path = path.join(path.dirname(callingFilePath), config.path);
+	}
+
 	var files = null;
 	try {
 		files = fs.readdirSync(config.path);
 	} catch (e) {
 		if (e.code === 'ENOENT') {
-			throw new Howhap(config.errors.BAD_PATH, { path: config.path });
+			throw new Howhap(config.errors.BAD_PATH, { path: originalPath });
 		}
 		throw new Howhap(config.errors.UNKNOWN, { error: e.toString() });
 	}
 
-	var models = files.map(function (file) {
+	var models = files.filter(function (file) {
+		// Ignore non-javascript files and hidden files.
+		return path.extname(file) === '.js' && file.charAt(0) !== '.';
+	}).map(function (file) {
 		return {
 			model: require(path.join(config.path, file)),
 			name: file.split('.')[0]

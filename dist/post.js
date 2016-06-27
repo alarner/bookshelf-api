@@ -1,14 +1,19 @@
-"use strict";
+'use strict';
 
+var HowhapList = require('howhap-list');
 module.exports = function (req, res, urlPieces, model, config) {
+	var list = new HowhapList(null, {
+		availableErrors: config.errors
+	});
+
 	model.set(req.body);
 	return model.save().then(function (savedModel) {
 		res.json(savedModel.toJSON());
 	}).catch(function (err) {
-		res.status(400).json({
-			message: err.toString(),
-			status: 400
+		list.add('UNKNOWN', {
+			message: err.toString()
 		});
+		res.status(400).json(list.toJSON());
 	}).then(function () {
 		return Promise.resolve({
 			urlPieces: urlPieces,
