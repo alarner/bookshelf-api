@@ -19,12 +19,20 @@ describe('index.js', function() {
 	it('should throw an error if the path is invalid', function() {
 		expect(function() { api({path: 'foo'}); }).to.throw('Could not find the model path foo.');
 	});
-	it('should work if the path is valid', function() {
+	it('should work if the path is valid and absolute', function() {
 		expect(function(){ api({
 			path: path.join(__dirname, 'fixtures/models')
 		}); }).to.not.throw();
 		expect(api({
 			path: path.join(__dirname, 'fixtures/models')
+		})).to.be.a.function;
+	});
+	it('should work if the path is valid and relative', function() {
+		expect(function(){ api({
+			path: 'fixtures/models'
+		}); }).to.not.throw();
+		expect(api({
+			path: 'fixtures/models'
 		})).to.be.a.function;
 	});
 });
