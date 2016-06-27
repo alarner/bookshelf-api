@@ -10,7 +10,7 @@ Here's the basic usage:
 let express = require('express');
 let path = require('path');
 let api = require('bookshelf-api')({
-	path: path.join(__dirname, 'models')
+	path: path.join('./models') // relative to the current directory
 });
 
 let app = express();
