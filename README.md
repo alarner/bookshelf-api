@@ -59,7 +59,7 @@ Below you will find a list of the available options and their behavior:
 
 ##### path
 
-A string representing the path where the bookshelf models directory is located.
+A string representing the path where the bookshelf models directory is located. This can be either an absolute path or a path relative to the directory of the calling script.
 
 ```js
 let path = require('path');
