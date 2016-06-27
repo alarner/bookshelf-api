@@ -3,6 +3,7 @@ let path = require('path');
 let fs = require('fs');
 let Howhap = require('howhap');
 let errors = require('./errors');
+let getStack = require('./get-stack');
 
 module.exports = function(config) {
 	if(!_.isObject(config)) {
@@ -22,13 +23,23 @@ module.exports = function(config) {
 		throw new Howhap(config.errors.MISSING_PATH);
 	}
 
+	const originalPath = config.path;
+
+	// Relative path
+	if(!path.isAbsolute(config.path)) {
+		let stack = getStack();
+		stack.shift();
+		let callingFilePath = stack.shift().getFileName();
+		config.path = path.join(path.dirname(callingFilePath), config.path);
+	}
+
 	let files = null;
 	try {
 		files = fs.readdirSync(config.path);
 	}
 	catch(e) {
 		if(e.code === 'ENOENT') {
-			throw new Howhap(config.errors.BAD_PATH, {path: config.path});
+			throw new Howhap(config.errors.BAD_PATH, {path: originalPath});
 		}
 		throw new Howhap(config.errors.UNKNOWN, {error: e.toString()});
 	}
