@@ -1,5 +1,7 @@
 # bookshelf api
 
+[Custom URLS](#custom-urls) | [Options](#options) | [Where clauses](#where-clauses) | [Fetching related models](#fetching-related-models) | [Ordering results](#ordering-results)
+
 Bookshelf API is configurable Express middleware that allows you to serve a RESTful API from a directory of [Bookshelf.js](http://bookshelfjs.org/) models.
 
 `npm install --save bookshelf-api`
@@ -10,7 +12,7 @@ Here's the basic usage:
 let express = require('express');
 let path = require('path');
 let api = require('bookshelf-api')({
-	path: path.join('./models') // relative to the current directory
+	path: './models' // relative to the current directory
 });
 
 let app = express();
@@ -38,7 +40,27 @@ Using the setup above you will now be able to make API requests to `/api/v1/prod
 
 You can find a full working example in the [example](/example) directory.
 
-Bookshelf API provides a number of options that allow you to customize the behavior of the API. They should be passed in to the middleware:
+## Custom URLs
+If you need more fined grained control over the URL format of your API, Bookshelf API allows you to specify customized URL formats. Consider the following example:
+
+```js
+let express = require('express');
+let path = require('path');
+let api = require('bookshelf-api')({
+	path: './models'
+});
+
+let app = express();
+app.get('/api/v1/auth/all', api('User'));
+app.get('/api/v1/auth/:id/details', api('User'));
+app.post('/api/v1/auth', api('User'));
+```
+
+You may pass a [string] model name (this should match the file name of your model) into the middleware to ensure that the matched route will only interact with that specified model. You can use `:id` in your parameterized route to specify how to interact with a single model of the specified type.
+
+## Options
+
+Bookshelf API also provides a number of options that allow you to customize the behavior of the API. They should be passed in to the middleware:
 
 ```js
 let options = {
@@ -54,8 +76,6 @@ let api = require('bookshelf-api')(options);
 ```
 
 Below you will find a list of the available options and their behavior:
-
-## Options
 
 ##### path
 
@@ -138,7 +158,7 @@ let api = require('bookshelf-api')(options);
 
 ## Where clauses
 
-The bookshelf-api module supports querying the API via where clauses in the query parameters of your GET requests. There are two supported formats:
+The Bookshelf API module supports querying the API via where clauses in the query parameters of your GET requests. There are two supported formats:
 
 ### Object format
 
@@ -179,9 +199,9 @@ $.ajax({
 - Like: `['name', 'LIKE', 'Hat%']`
 - Not Like: `['name', 'NOT LIKE', 'Hat%']`
 
-## Pulling related models
+## Fetching related models
 
-The bookshelf-api module supports querying related models.
+The Bookshelf API module supports querying related models.
 
 ```js
 $.ajax({
