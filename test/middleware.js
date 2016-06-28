@@ -2,6 +2,7 @@ let expect = require('chai').expect;
 let makeReq = require('./make-req');
 let makeRes = require('./make-res');
 let api = require('../src/index.js');
+let products = require('./fixtures/data/products');
 let path = require('path');
 let middleware = null;
 let Product = null;
@@ -101,58 +102,7 @@ describe('middleware.js', function() {
 			req.originalUrl = '/product';
 			let res = makeRes();
 			middleware(req, res).then(result => {
-				expect(res.json.calledWith([
-					{
-						id: 1,
-						name: 'Pants',
-						price: '60.00',
-						quantity: 108,
-						createdAt: new Date('2015-03-05 07:12:33'),
-						updatedAt: null,
-						deletedAt: null,
-						categoryId: 1
-					},
-					{
-						id: 2,
-						name: 'Socks',
-						price: '6.50',
-						quantity: 38,
-						createdAt: new Date('2015-03-05 07:12:33'),
-						updatedAt: null,
-						deletedAt: null,
-						categoryId: 1
-					},
-					{
-						id: 3,
-						name: 'Shirt',
-						price: '42.99',
-						quantity: 74,
-						createdAt: new Date('2015-03-05 07:12:33'),
-						updatedAt: null,
-						deletedAt: null,
-						categoryId: 1
-					},
-					{
-						id: 4,
-						name: 'Hat',
-						price: '22.45',
-						quantity: 233,
-						createdAt: new Date('2015-03-05 07:12:33'),
-						updatedAt: null,
-						deletedAt: null,
-						categoryId: 1
-					},
-					{
-						id: 6,
-						name: 'Smartphone',
-						price: '220.45',
-						quantity: 231,
-						createdAt: new Date('2015-03-05 07:12:33'),
-						updatedAt: null,
-						deletedAt: null,
-						categoryId: 2
-					} 
-				])).to.be.true;
+				expect(res.json.calledWith(products)).to.be.true;
 				done();
 			})
 			.catch(done);
@@ -851,6 +801,35 @@ describe('middleware.js', function() {
 			})
 			.then(product => {
 				expect(product).to.be.null;
+				done();
+			})
+			.catch(done);
+		});
+	});
+
+	describe('named models', function() {
+		it('should return a middleware function', function() {
+			expect(middleware('Product')).to.be.a('function');
+		});
+		it('should used the named model regardless of the request url', function(done) {
+			let m = middleware('Product');
+			let req = makeReq('get');
+			req.originalUrl = '/authentication';
+			let res = makeRes();
+			m(req, res).then(result => {
+				expect(res.json.calledWith(products)).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+		it('should look for req.params.id to find the model id', function(done) {
+			let m = middleware('Product');
+			let req = makeReq('get');
+			req.params = { id: 6 };
+			req.originalUrl = '/authentication';
+			let res = makeRes();
+			m(req, res).then(result => {
+				expect(res.json.calledWith(products[4])).to.be.true;
 				done();
 			})
 			.catch(done);

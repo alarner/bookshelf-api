@@ -7,7 +7,7 @@ let url = require('url');
 let path = require('path');
 
 module.exports = function(models, config) {
-	return function(req, res, next) {
+	function middleware(req, res, next) {
 		let parsed = url.parse(_.trim(req.originalUrl, path.sep));
 		let urlPieces = parsed.pathname.split(path.sep);
 		let method = req.method.toLowerCase();
@@ -19,7 +19,15 @@ module.exports = function(models, config) {
 		let modelName = null;
 		let modelId = null;
 
-		if(!models.hasOwnProperty(urlPieces[urlPieces.length-1].toLowerCase())) {
+		// Named model
+		if(this && this.modelName) {
+			modelName = this.modelName.toLowerCase();
+			if(req.params && req.params.id) {
+				modelId = req.params.id;
+			}
+		}
+		// Model from URL
+		else if(!models.hasOwnProperty(urlPieces[urlPieces.length-1].toLowerCase())) {
 			if(urlPieces.length < 2 || !models.hasOwnProperty(urlPieces[urlPieces.length-2].toLowerCase())) {
 				return next();
 			}
@@ -55,5 +63,13 @@ module.exports = function(models, config) {
 		else if(method === 'delete') {
 			return del(req, res, filteredUrlPieces, model, config);
 		}
+	};
+
+	return function(req, res, next) {
+		// Specifically calling out a named model
+		if(typeof req === 'string') {
+			return middleware.bind({ modelName: req });
+		}
+		return middleware(req, res, next);
 	};
 };
