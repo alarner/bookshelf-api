@@ -9,7 +9,7 @@ var url = require('url');
 var path = require('path');
 
 module.exports = function (models, config) {
-	return function (req, res, next) {
+	function middleware(req, res, next) {
 		var parsed = url.parse(_.trim(req.originalUrl, path.sep));
 		var urlPieces = parsed.pathname.split(path.sep);
 		var method = req.method.toLowerCase();
@@ -21,16 +21,24 @@ module.exports = function (models, config) {
 		var modelName = null;
 		var modelId = null;
 
-		if (!models.hasOwnProperty(urlPieces[urlPieces.length - 1].toLowerCase())) {
-			if (urlPieces.length < 2 || !models.hasOwnProperty(urlPieces[urlPieces.length - 2].toLowerCase())) {
-				return next();
-			} else {
-				modelName = urlPieces[urlPieces.length - 2].toLowerCase();
-				modelId = urlPieces[urlPieces.length - 1];
+		// Named model
+		if (this && this.modelName) {
+			modelName = this.modelName.toLowerCase();
+			if (req.params && req.params.id) {
+				modelId = req.params.id;
 			}
-		} else {
-			modelName = urlPieces[urlPieces.length - 1].toLowerCase();
 		}
+		// Model from URL
+		else if (!models.hasOwnProperty(urlPieces[urlPieces.length - 1].toLowerCase())) {
+				if (urlPieces.length < 2 || !models.hasOwnProperty(urlPieces[urlPieces.length - 2].toLowerCase())) {
+					return next();
+				} else {
+					modelName = urlPieces[urlPieces.length - 2].toLowerCase();
+					modelId = urlPieces[urlPieces.length - 1];
+				}
+			} else {
+				modelName = urlPieces[urlPieces.length - 1].toLowerCase();
+			}
 
 		var filteredUrlPieces = [modelName];
 		var Model = models[modelName];
@@ -51,5 +59,13 @@ module.exports = function (models, config) {
 		} else if (method === 'delete') {
 			return del(req, res, filteredUrlPieces, model, config);
 		}
+	};
+
+	return function (req, res, next) {
+		// Specifically calling out a named model
+		if (typeof req === 'string') {
+			return middleware.bind({ modelName: req });
+		}
+		return middleware(req, res, next);
 	};
 };
