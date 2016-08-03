@@ -10,8 +10,8 @@ var path = require('path');
 
 module.exports = function (models, config) {
 	function middleware(req, res, next) {
-		var parsed = url.parse(_.trim(req.originalUrl, path.sep));
-		var urlPieces = parsed.pathname.split(path.sep);
+		var parsed = url.parse(_.trim(req.originalUrl,'/'));
+		var urlPieces = parsed.pathname.split('/');
 		var method = req.method.toLowerCase();
 
 		if (!urlPieces.length) {
