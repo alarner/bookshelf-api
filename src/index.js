@@ -4,6 +4,7 @@ let fs = require('fs');
 let Howhap = require('howhap');
 let errors = require('./errors');
 let getStack = require('./get-stack');
+let pluralize = require('pluralize');
 
 module.exports = function(config) {
 	if(!_.isObject(config)) {
@@ -14,7 +15,8 @@ module.exports = function(config) {
 		putBehavior: 'upsert',
 		hardDelete: false,
 		deletedAttribute: 'deletedAt',
-		errors: errors
+		errors: errors,
+		pluralEndpoints: false,
 	};
 
 	config = _.extend(defaultConfig, config);
@@ -50,9 +52,10 @@ module.exports = function(config) {
 		return (path.extname(file) === '.js' && file.charAt(0) !== '.');
 	})
 	.map(function(file) {
+		let modelName = file.split('.')[0];
 		return {
 			model: require(path.join(config.path, file)),
-			name: file.split('.')[0]
+			name: config.pluralEndpoints ? pluralize(modelName) : modelName,
 		};
 	})
 	.reduce(function(before, info) {
