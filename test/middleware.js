@@ -102,7 +102,7 @@ describe('middleware.js', function() {
 			req.originalUrl = '/product';
 			let res = makeRes();
 			middleware(req, res).then(result => {
-				expect(res.json.calledWith(products)).to.be.true;
+				expect(res.json.args[0][0]).to.deep.equal(products);
 				done();
 			})
 			.catch(done);

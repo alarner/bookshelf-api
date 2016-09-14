@@ -4,7 +4,7 @@
   "description": "Express middleware for generating an API based on bookshelf models.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-register",
+    "test": "mocha",
     "build": "./node_modules/.bin/babel src -d dist"
   },
   "author": "Aaron Larner",
