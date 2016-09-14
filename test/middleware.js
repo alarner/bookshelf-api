@@ -682,6 +682,17 @@ describe('middleware.js', function() {
 			.catch(done);
 		});
 
+		it('should work with models that don\'t have timestamps listed', function(done) {
+			let req = makeReq('delete');
+			req.originalUrl = '/noTimestamps/1';
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.args[0][0]).to.deep.equal({ id: '1' });
+				done();
+			})
+			.catch(done);
+		});
+
 		it('should return an error if the record doesn\'t exist and we are soft deleting', function(done) {
 			let req1 = makeReq('delete');
 			req1.originalUrl = '/product/100';
