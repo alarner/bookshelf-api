@@ -658,6 +658,18 @@ describe('middleware.js', function() {
 			})
 			.catch(done);
 		});
+
+		it('should work with models that don\'t have timestamps listed', function(done) {
+			let req = makeReq('put');
+			req.body = { name: 'Test2' };
+			req.originalUrl = '/noTimestamps/1';
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.args[0][0]).to.deep.equal({ id: '1', name: 'Test2' });
+				done();
+			})
+			.catch(done);
+		});
 	});
 
 	describe('delete', function() {
