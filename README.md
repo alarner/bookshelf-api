@@ -68,6 +68,7 @@ let options = {
 	putBehavior: 'update',
 	hardDelete: true,
 	deletedAttribute: 'deletedAt',
+	pluralEndpoints: true,
 	errors: {
 		...
 	}
@@ -130,6 +131,19 @@ This option is only relevant if the *hardDelete* option is false. This option sp
 let options = {
 	hardDelete: true,
 	deletedAttribute: 'delete_date'
+}
+let api = require('bookshelf-api')(options);
+```
+
+##### pluralEndpoints
+
+*default: false*
+
+This option allows you to change the default API endpoints that bookshelf-api sets up. By default, endpoints are singular (/product, /user, etc). Setting this option to true instead uses plural endpoints (/products, /users, etc).
+
+```js
+let options = {
+	pluralEndpoints: true
 }
 let api = require('bookshelf-api')(options);
 ```
