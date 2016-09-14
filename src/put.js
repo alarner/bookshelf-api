@@ -22,7 +22,8 @@ module.exports = function(req, res, urlPieces, model, config) {
 			options.method = 'update';
 		}
 		let promise = model;
-		if(model.hasTimestamps.indexOf(config.deletedAttribute) >= 0) {
+		let hasTimestamps = model.hasTimestamps || [];
+		if(hasTimestamps.indexOf(config.deletedAttribute) >= 0) {
 			promise = promise.where(config.deletedAttribute, null);
 		}
 		return promise.save(req.body, options).then(savedModel => {

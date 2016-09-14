@@ -5,6 +5,7 @@ let api = require('../src/index.js');
 let products = require('./fixtures/data/products');
 let path = require('path');
 let middleware = null;
+let pluralizedMiddleware = null;
 let Product = null;
 
 describe('middleware.js', function() {
@@ -12,6 +13,10 @@ describe('middleware.js', function() {
 		Product = require('./fixtures/models/Product');
 		middleware = api({
 			path: path.join(__dirname, 'fixtures/models')
+		});
+		pluralizedMiddleware = api({
+			path: path.join(__dirname, 'fixtures/models'),
+			pluralEndpoints: true
 		});
 	});
 
@@ -103,6 +108,16 @@ describe('middleware.js', function() {
 			let res = makeRes();
 			middleware(req, res).then(result => {
 				expect(res.json.args[0][0]).to.deep.equal(products);
+				done();
+			})
+			.catch(done);
+		});
+		it('should work with models that don\'t have timestamps listed', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/noTimestamps';
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.args[0][0]).to.deep.equal([ { id: 1, name: 'Test1' } ]);
 				done();
 			})
 			.catch(done);
@@ -445,6 +460,60 @@ describe('middleware.js', function() {
 			})
 			.catch(done);
 		});
+		it('should not work with pluralized routes when url is singular', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				done('Did not throw error');
+			})
+			.catch(error => {
+				expect(error).to.deep.equal({ error: 'No match' });
+				done();
+			});
+		});
+		it('should work with pluralized routes when url is plural', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/products';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				expect(result.urlPieces.length).to.equal(1);
+				expect(result.model instanceof Product).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+		it('should not work with pluralized routes when url is singular with an id', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product/3';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				done('Did not throw error');
+			})
+			.catch(function(error) {
+				expect(error).to.deep.equal({ error: 'No match' });
+				done();
+			});
+		});
+		it('should work with pluralized routes when url is plural', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/products/3';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				expect(res.json.calledWith({
+					id: 3,
+					name: 'Shirt',
+					price: '42.99',
+					quantity: 74,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 1
+				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
 	});
 	
 	describe('post', function() {
@@ -648,6 +717,18 @@ describe('middleware.js', function() {
 			})
 			.catch(done);
 		});
+
+		it('should work with models that don\'t have timestamps listed', function(done) {
+			let req = makeReq('put');
+			req.body = { name: 'Test2' };
+			req.originalUrl = '/noTimestamps/1';
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.args[0][0]).to.deep.equal({ id: '1', name: 'Test2' });
+				done();
+			})
+			.catch(done);
+		});
 	});
 
 	describe('delete', function() {
@@ -667,6 +748,17 @@ describe('middleware.js', function() {
 						}
 					}
 				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+
+		it('should work with models that don\'t have timestamps listed', function(done) {
+			let req = makeReq('delete');
+			req.originalUrl = '/noTimestamps/1';
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.args[0][0]).to.deep.equal({ id: '1' });
 				done();
 			})
 			.catch(done);

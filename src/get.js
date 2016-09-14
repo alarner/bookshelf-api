@@ -8,7 +8,8 @@ module.exports = function(req, res, urlPieces, model, config) {
 		}
 	);
 
-	if(model.hasTimestamps.indexOf(config.deletedAttribute) !== -1) {
+	let hasTimestamps = model.hasTimestamps || [];
+	if(hasTimestamps.indexOf(config.deletedAttribute) !== -1) {
 		promise = promise.where(config.deletedAttribute, null);
 	}
 
