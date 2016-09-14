@@ -5,6 +5,7 @@ let api = require('../src/index.js');
 let products = require('./fixtures/data/products');
 let path = require('path');
 let middleware = null;
+let pluralizedMiddleware = null;
 let Product = null;
 
 describe('middleware.js', function() {
@@ -12,6 +13,10 @@ describe('middleware.js', function() {
 		Product = require('./fixtures/models/Product');
 		middleware = api({
 			path: path.join(__dirname, 'fixtures/models')
+		});
+		pluralizedMiddleware = api({
+			path: path.join(__dirname, 'fixtures/models'),
+			pluralEndpoints: true
 		});
 	});
 
@@ -450,6 +455,60 @@ describe('middleware.js', function() {
 							id: '100'
 						}
 					}
+				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+		it('should not work with pluralized routes when url is singular', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				done('Did not throw error');
+			})
+			.catch(error => {
+				expect(error).to.deep.equal({ error: 'No match' });
+				done();
+			});
+		});
+		it('should work with pluralized routes when url is plural', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/products';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				expect(result.urlPieces.length).to.equal(1);
+				expect(result.model instanceof Product).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+		it('should not work with pluralized routes when url is singular with an id', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/product/3';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				done('Did not throw error');
+			})
+			.catch(function(error) {
+				expect(error).to.deep.equal({ error: 'No match' });
+				done();
+			});
+		});
+		it('should work with pluralized routes when url is plural', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/products/3';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				expect(res.json.calledWith({
+					id: 3,
+					name: 'Shirt',
+					price: '42.99',
+					quantity: 74,
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null,
+					categoryId: 1
 				})).to.be.true;
 				done();
 			})
