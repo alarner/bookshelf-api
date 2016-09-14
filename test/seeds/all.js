@@ -70,7 +70,7 @@ exports.seed = function(knex, Promise) {
 	.then(() => {
 		return knex('categories').insert({
 			name: 'Apparel',
-			createdAt: '2015-03-05 07:12:33',
+			createdAt: new Date('2015-03-05 07:12:33'),
 			updatedAt: null,
 			deletedAt: null
 		});
@@ -78,7 +78,7 @@ exports.seed = function(knex, Promise) {
 	.then(() => {
 		return knex('categories').insert({
 			name: 'Electronics',
-			createdAt: '2015-03-05 07:12:33',
+			createdAt: new Date('2015-03-05 07:12:33'),
 			updatedAt: null,
 			deletedAt: null
 		});
@@ -88,7 +88,7 @@ exports.seed = function(knex, Promise) {
 			name: 'Pants',
 			price: 60,
 			quantity: 108,
-			createdAt: '2015-03-05 07:12:33',
+			createdAt: new Date('2015-03-05 07:12:33'),
 			updatedAt: null,
 			deletedAt: null,
 			categoryId: 1
@@ -99,7 +99,7 @@ exports.seed = function(knex, Promise) {
 			name: 'Socks',
 			price: 6.5,
 			quantity: 38,
-			createdAt: '2015-03-05 07:12:33',
+			createdAt: new Date('2015-03-05 07:12:33'),
 			updatedAt: null,
 			deletedAt: null,
 			categoryId: 1
@@ -110,7 +110,7 @@ exports.seed = function(knex, Promise) {
 			name: 'Shirt',
 			price: 42.99,
 			quantity: 74,
-			createdAt: '2015-03-05 07:12:33',
+			createdAt: new Date('2015-03-05 07:12:33'),
 			updatedAt: null,
 			deletedAt: null,
 			categoryId: 1
@@ -121,7 +121,7 @@ exports.seed = function(knex, Promise) {
 			name: 'Hat',
 			price: 22.45,
 			quantity: 233,
-			createdAt: '2015-03-05 07:12:33',
+			createdAt: new Date('2015-03-05 07:12:33'),
 			updatedAt: null,
 			deletedAt: null,
 			categoryId: 1
@@ -132,9 +132,9 @@ exports.seed = function(knex, Promise) {
 			name: 'Ugly Hat',
 			price: 22.45,
 			quantity: 231,
-			createdAt: '2015-03-05 07:12:33',
+			createdAt: new Date('2015-03-05 07:12:33'),
 			updatedAt: null,
-			deletedAt: '2015-03-05 07:12:33',
+			deletedAt: new Date('2015-03-05 07:12:33'),
 			categoryId: 1
 		});
 	})
@@ -143,7 +143,7 @@ exports.seed = function(knex, Promise) {
 			name: 'Smartphone',
 			price: 220.45,
 			quantity: 231,
-			createdAt: '2015-03-05 07:12:33',
+			createdAt: new Date('2015-03-05 07:12:33'),
 			updatedAt: null,
 			deletedAt: null,
 			categoryId: 2
