@@ -1,6 +1,6 @@
 {
   "name": "bookshelf-api",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "Express middleware for generating an API based on bookshelf models.",
   "main": "dist/index.js",
   "scripts": {
