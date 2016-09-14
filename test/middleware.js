@@ -107,6 +107,16 @@ describe('middleware.js', function() {
 			})
 			.catch(done);
 		});
+		it('should work with models that don\'t have timestamps listed', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/noTimestamps';
+			let res = makeRes();
+			middleware(req, res).then(result => {
+				expect(res.json.args[0][0]).to.deep.equal([ { id: 1, name: 'Test1' } ]);
+				done();
+			})
+			.catch(done);
+		});
 		it('should be able to get a list of all records when the model has no deletedAt timestamp', function(done) {
 			let req = makeReq('get');
 			req.originalUrl = '/authentication';

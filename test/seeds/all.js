@@ -10,6 +10,9 @@ exports.seed = function(knex, Promise) {
 		return knex.schema.dropTableIfExists('users');
 	})
 	.then(() => {
+		return knex.schema.dropTableIfExists('noTimestamps');
+	})
+	.then(() => {
 		return knex.schema.createTable('categories', function(t) {
 			t.increments('id').unsigned().primary();
 			t.dateTime('createdAt').notNull();
@@ -65,6 +68,12 @@ exports.seed = function(knex, Promise) {
 				.references('id')
 				.inTable('users')
 				.onDelete('CASCADE');
+		});
+	})
+	.then(() => {
+		return knex.schema.createTable('noTimestamps', function(t) {
+			t.increments('id').unsigned().primary();
+			t.string('name').notNull();
 		});
 	})
 	.then(() => {
@@ -147,6 +156,11 @@ exports.seed = function(knex, Promise) {
 			updatedAt: null,
 			deletedAt: null,
 			categoryId: 2
+		});
+	})
+	.then(() => {
+		return knex('noTimestamps').insert({
+			name: 'Test1'
 		});
 	});
 };
