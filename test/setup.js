@@ -13,7 +13,7 @@ let knex = require('knex')({
 	useNullAsDefault: true,
 	connection: {
 		host: 'localhost',
-		user: 'alarner',
+		user: 'postgres',
 		database: 'test'
 	},
 	seeds: {
