@@ -1,17 +1,10 @@
 exports.seed = function(knex, Promise) {
 	return knex.schema.dropTableIfExists('products')
-	.then(() => {
-		return knex.schema.dropTableIfExists('categories');
-	})
-	.then(() => {
-		return knex.schema.dropTableIfExists('authentication');
-	})
-	.then(() => {
-		return knex.schema.dropTableIfExists('users');
-	})
-	.then(() => {
-		return knex.schema.dropTableIfExists('noTimestamps');
-	})
+	.then(() => knex.schema.dropTableIfExists('categories'))
+	.then(() => knex.schema.dropTableIfExists('authentication'))
+	.then(() => knex.schema.dropTableIfExists('users'))
+	.then(() => knex.schema.dropTableIfExists('uuids'))
+	.then(() => knex.schema.dropTableIfExists('noTimestamps'))
 	.then(() => {
 		return knex.schema.createTable('categories', function(t) {
 			t.increments('id').unsigned().primary();
@@ -68,6 +61,16 @@ exports.seed = function(knex, Promise) {
 				.references('id')
 				.inTable('users')
 				.onDelete('CASCADE');
+		});
+	})
+	.then(() => {
+		return knex.schema.createTable('uuids', function(t) {
+			t.string('id').primary();
+			t.dateTime('createdAt').notNull();
+			t.dateTime('updatedAt').nullable();
+			t.dateTime('deletedAt').nullable();
+
+			t.string('name').notNull();
 		});
 	})
 	.then(() => {
@@ -156,6 +159,24 @@ exports.seed = function(knex, Promise) {
 			updatedAt: null,
 			deletedAt: null,
 			categoryId: 2
+		});
+	})
+	.then(() => {
+		return knex('uuids').insert({
+			id: '98b752bf-696a-4ae7-894f-5b9fa2b3e743',
+			name: 'test uuid 1',
+			createdAt: new Date('2015-03-05 07:12:33'),
+			updatedAt: null,
+			deletedAt: null
+		});
+	})
+	.then(() => {
+		return knex('uuids').insert({
+			id: 'b561cbb3-5a9c-4ee5-a17c-6db06876249b',
+			name: 'test uuid 2',
+			createdAt: new Date('2015-03-05 07:12:33'),
+			updatedAt: null,
+			deletedAt: null
 		});
 	})
 	.then(() => {
