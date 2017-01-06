@@ -6,6 +6,7 @@ var fs = require('fs');
 var Howhap = require('howhap');
 var errors = require('./errors');
 var getStack = require('./get-stack');
+var pluralize = require('pluralize');
 
 module.exports = function (config) {
 	if (!_.isObject(config)) {
@@ -16,7 +17,8 @@ module.exports = function (config) {
 		putBehavior: 'upsert',
 		hardDelete: false,
 		deletedAttribute: 'deletedAt',
-		errors: errors
+		errors: errors,
+		pluralEndpoints: false
 	};
 
 	config = _.extend(defaultConfig, config);
@@ -49,9 +51,10 @@ module.exports = function (config) {
 		// Ignore non-javascript files and hidden files.
 		return path.extname(file) === '.js' && file.charAt(0) !== '.';
 	}).map(function (file) {
+		var modelName = file.split('.')[0];
 		return {
 			model: require(path.join(config.path, file)),
-			name: file.split('.')[0]
+			name: config.pluralEndpoints ? pluralize(modelName) : modelName
 		};
 	}).reduce(function (before, info) {
 		before[info.name.toLowerCase()] = info.model;

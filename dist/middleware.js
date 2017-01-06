@@ -10,12 +10,20 @@ var path = require('path');
 
 module.exports = function (models, config) {
 	function middleware(req, res, next) {
-		var parsed = url.parse(_.trim(req.originalUrl,'/'));
-		var urlPieces = parsed.pathname.split('/');
+
+		function error(message) {
+			if (next && _.isFunction(next)) {
+				next();
+			}
+			return Promise.reject({ error: message });
+		}
+
+		var parsed = url.parse(_.trim(req.originalUrl, path.sep));
+		var urlPieces = parsed.pathname.split(path.sep);
 		var method = req.method.toLowerCase();
 
 		if (!urlPieces.length) {
-			return next();
+			return error('Unknown path');
 		}
 
 		var modelName = null;
@@ -31,7 +39,7 @@ module.exports = function (models, config) {
 		// Model from URL
 		else if (!models.hasOwnProperty(urlPieces[urlPieces.length - 1].toLowerCase())) {
 				if (urlPieces.length < 2 || !models.hasOwnProperty(urlPieces[urlPieces.length - 2].toLowerCase())) {
-					return next();
+					return error('No match');
 				} else {
 					modelName = urlPieces[urlPieces.length - 2].toLowerCase();
 					modelId = urlPieces[urlPieces.length - 1];

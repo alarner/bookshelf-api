@@ -13,7 +13,7 @@ module.exports = function (req, res, urlPieces, model, config) {
 		list.add('UNKNOWN', {
 			message: err.toString()
 		});
-		res.status(400).json(list.toJSON());
+		res.status(400).json(list.toObject());
 	}).then(function () {
 		return Promise.resolve({
 			urlPieces: urlPieces,

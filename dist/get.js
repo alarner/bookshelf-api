@@ -7,7 +7,8 @@ module.exports = function (req, res, urlPieces, model, config) {
 		availableErrors: config.errors
 	});
 
-	if (model.hasTimestamps.indexOf(config.deletedAttribute) !== -1) {
+	var hasTimestamps = model.hasTimestamps || [];
+	if (hasTimestamps.indexOf(config.deletedAttribute) !== -1) {
 		promise = promise.where(config.deletedAttribute, null);
 	}
 
@@ -52,7 +53,7 @@ module.exports = function (req, res, urlPieces, model, config) {
 				model: urlPieces[0],
 				id: urlPieces[1]
 			});
-			res.status(config.errors.RECORD_NOT_FOUND.status).json(list.toJSON());
+			res.status(config.errors.RECORD_NOT_FOUND.status).json(list.toObject());
 		} else {
 			res.json(results.toJSON());
 		}
@@ -60,7 +61,7 @@ module.exports = function (req, res, urlPieces, model, config) {
 		list.add('RECORD_NOT_FOUND', {
 			error: err.toString()
 		});
-		res.status(config.errors.UNKNOWN.status).json(list.toJSON());
+		res.status(config.errors.UNKNOWN.status).json(list.toObject());
 	}).then(function () {
 		return Promise.resolve({
 			urlPieces: urlPieces,

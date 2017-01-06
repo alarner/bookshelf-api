@@ -1,6 +1,6 @@
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var HowhapList = require('howhap-list');
 module.exports = function (req, res, urlPieces, model, config) {
@@ -9,7 +9,7 @@ module.exports = function (req, res, urlPieces, model, config) {
 	});
 	if (urlPieces.length < 2) {
 		list.add('REQUIRES_ID', { model: urlPieces[0] });
-		res.status(config.errors.REQUIRES_ID.status).json(list.toJSON());
+		res.status(config.errors.REQUIRES_ID.status).json(list.toObject());
 		return new Promise(function (resolve, reject) {
 			resolve({
 				urlPieces: urlPieces,
@@ -21,7 +21,8 @@ module.exports = function (req, res, urlPieces, model, config) {
 			var result = {};
 			result[model.idAttribute] = model.id;
 			var promise = null;
-			if (model.hasTimestamps.indexOf(config.deletedAttribute) >= 0 && (!req.hardDelete && !config.hardDelete || req.hardDelete === false)) {
+			var hasTimestamps = model.hasTimestamps || [];
+			if (hasTimestamps.indexOf(config.deletedAttribute) >= 0 && (!req.hardDelete && !config.hardDelete || req.hardDelete === false)) {
 				var updatedData = {};
 				updatedData[model.hasTimestamps[2]] = new Date();
 				promise = model.save(updatedData, { method: 'update' }).then(function (savedModel) {
@@ -46,7 +47,7 @@ module.exports = function (req, res, urlPieces, model, config) {
 						list.add('UNKNOWN', { error: err.toString() });
 						status = config.errors.UNKNOWN.status;
 					}
-					res.status(status).json(list.toJSON());
+					res.status(status).json(list.toObject());
 				}).then(function () {
 					return Promise.resolve({
 						urlPieces: urlPieces,

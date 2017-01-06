@@ -7,7 +7,7 @@ module.exports = function (req, res, urlPieces, model, config) {
 	});
 	if (config.putBehavior && config.putBehavior.toLowerCase() === 'update' && urlPieces.length < 2) {
 		list.add('REQUIRES_ID', { model: urlPieces[0] });
-		res.status(config.errors.REQUIRES_ID.status).json(list.toJSON());
+		res.status(config.errors.REQUIRES_ID.status).json(list.toObject());
 		return new Promise(function (resolve, reject) {
 			resolve({
 				urlPieces: urlPieces,
@@ -20,7 +20,8 @@ module.exports = function (req, res, urlPieces, model, config) {
 			options.method = 'update';
 		}
 		var promise = model;
-		if (model.hasTimestamps.indexOf(config.deletedAttribute) >= 0) {
+		var hasTimestamps = model.hasTimestamps || [];
+		if (hasTimestamps.indexOf(config.deletedAttribute) >= 0) {
 			promise = promise.where(config.deletedAttribute, null);
 		}
 		return promise.save(req.body, options).then(function (savedModel) {
@@ -37,7 +38,7 @@ module.exports = function (req, res, urlPieces, model, config) {
 				list.add('UNKNOWN', { error: err.toString() });
 				status = config.errors.UNKNOWN.status;
 			}
-			res.status(status).json(list.toJSON());
+			res.status(status).json(list.toObject());
 		}).then(function () {
 			return Promise.resolve({
 				urlPieces: urlPieces,
