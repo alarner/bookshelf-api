@@ -8,7 +8,7 @@ module.exports = function(req, res, urlPieces, model, config) {
 	);
 	if(config.putBehavior && config.putBehavior.toLowerCase() === 'update' && urlPieces.length < 2) {
 		list.add('REQUIRES_ID', { model: urlPieces[0] });
-		res.status(config.errors.REQUIRES_ID.status).json(list.toJSON());
+		res.status(config.errors.REQUIRES_ID.status).json(list.toObject());
 		return new Promise((resolve, reject) => {
 			resolve({
 				urlPieces: urlPieces,
@@ -42,7 +42,7 @@ module.exports = function(req, res, urlPieces, model, config) {
 				list.add('UNKNOWN', { error: err.toString() });
 				status = config.errors.UNKNOWN.status;
 			}
-			res.status(status).json(list.toJSON());
+			res.status(status).json(list.toObject());
 		})
 		.then(() => {
 			return Promise.resolve({

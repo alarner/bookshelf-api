@@ -446,7 +446,7 @@ describe('middleware.js', function() {
 			let res = makeRes();
 			middleware(req, res).then(result => {
 				expect(res.status.calledWith(404)).to.be.true;
-				expect(res.json.calledWith({
+				expect(res.json.firstCall.args[0]).to.deep.equal({
 					default: {
 						message: 'Could not get "{{ model }}" with id {{ id }}.',
 						status: 404,
@@ -455,7 +455,7 @@ describe('middleware.js', function() {
 							id: '100'
 						}
 					}
-				})).to.be.true;
+				});
 				done();
 			})
 			.catch(done);
@@ -509,6 +509,38 @@ describe('middleware.js', function() {
 					updatedAt: null,
 					deletedAt: null,
 					categoryId: 1
+				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+		it('should work with string ids starting with a number', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/uuids/98b752bf-696a-4ae7-894f-5b9fa2b3e743';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				expect(res.json.calledWith({
+					id: '98b752bf-696a-4ae7-894f-5b9fa2b3e743',
+					name: 'test uuid 1',
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null
+				})).to.be.true;
+				done();
+			})
+			.catch(done);
+		});
+		it('should work with string ids starting with a letter', function(done) {
+			let req = makeReq('get');
+			req.originalUrl = '/uuids/b561cbb3-5a9c-4ee5-a17c-6db06876249b';
+			let res = makeRes();
+			pluralizedMiddleware(req, res).then(result => {
+				expect(res.json.calledWith({
+					id: 'b561cbb3-5a9c-4ee5-a17c-6db06876249b',
+					name: 'test uuid 2',
+					createdAt: new Date('2015-03-05 07:12:33'),
+					updatedAt: null,
+					deletedAt: null
 				})).to.be.true;
 				done();
 			})
